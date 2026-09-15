@@ -17,35 +17,20 @@
     "skipLibCheck": true,
     "strict": true,
     "strictPropertyInitialization": false,
-    "types": [
-      "vitest/globals",
-      "node"
-    ],
+    "types": ["vitest/globals", "node"],
     "paths": {
-      "@app/common": [
-        "./libs/common/src"
-      ],
-      "@app/common/*": [
-        "./libs/common/src/*"
-      ],
-      "@app/contracts": [
-        "./libs/contracts/src"
-      ],
-      "@app/contracts/*": [
-        "./libs/contracts/src/*"
-      ],
-      "@app/proto": [
-        "./libs/proto/src"
-      ],
-      "@app/proto/*": [
-        "./libs/proto/src/*"
-      ]
+      "@app/common": ["./libs/common/src"],
+      "@app/common/*": ["./libs/common/src/*"],
+      "@app/contracts": ["./libs/contracts/src"],
+      "@app/contracts/*": ["./libs/contracts/src/*"],
+      "@app/proto": ["./libs/proto/src"],
+      "@app/proto/*": ["./libs/proto/src/*"]
     }
   },
   "files": [],
   "references": [
     {
-      "path": "./apps/gestao-rh/tsconfig.app.json"
+      "path": "./apps/funcionarios/tsconfig.app.json"
     },
     {
       "path": "./apps/gateway/tsconfig.app.json"

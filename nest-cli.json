@@ -1,14 +1,14 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "apps/gestao-rh/src",
+  "sourceRoot": "apps/funcionarios/src",
   "compilerOptions": {
     "deleteOutDir": true,
     "builder": "rspack",
-    "tsConfigPath": "apps/gestao-rh/tsconfig.app.json"
+    "tsConfigPath": "apps/funcionarios/tsconfig.app.json"
   },
   "monorepo": true,
-  "root": "apps/gestao-rh",
+  "root": "apps/funcionarios",
   "projects": {
     "common": {
       "type": "library",
@@ -37,13 +37,13 @@
         "tsConfigPath": "apps/gateway/tsconfig.app.json"
       }
     },
-    "gestao-rh": {
+    "funcionarios": {
       "type": "application",
-      "root": "apps/gestao-rh",
+      "root": "apps/funcionarios",
       "entryFile": "main",
-      "sourceRoot": "apps/gestao-rh/src",
+      "sourceRoot": "apps/funcionarios/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/gestao-rh/tsconfig.app.json"
+        "tsConfigPath": "apps/funcionarios/tsconfig.app.json"
       }
     },
     "proto": {
