@@ -2,7 +2,7 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
 import { Funcionario } from '../entities/funcionario.entity.js';
 
-dotenv.config();
+dotenv.config({ path: './apps/funcionarios/.env' });
 
 export const FuncionarioDatabase: TypeOrmModuleOptions = {
   name: 'funcionario',

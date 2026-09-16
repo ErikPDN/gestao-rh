@@ -17,8 +17,11 @@ export class Funcionario {
   @Column({ name: 'nome', type: 'varchar', length: 255 })
   nome!: string;
 
-  // @Column({})
-  // cargo!: Cargo;
+  @Column({ name: 'departamento_id', type: 'uuid' })
+  departamentoId!: string;
+
+  @Column({ name: 'cargo_id', type: 'uuid' })
+  cargoId!: string;
 
   @Column({ name: 'salario', type: 'decimal', precision: 10, scale: 2 })
   salario!: number;
