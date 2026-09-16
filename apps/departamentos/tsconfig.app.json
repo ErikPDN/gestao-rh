@@ -4,7 +4,7 @@
     "composite": true,
     "declaration": true,
     "rootDir": "./src",
-    "outDir": "../../dist/apps/funcionarios"
+    "outDir": "../../dist/apps/departamentos"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "test", "**/*spec.ts"],

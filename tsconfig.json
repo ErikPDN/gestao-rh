@@ -17,29 +17,14 @@
     "skipLibCheck": true,
     "strict": true,
     "strictPropertyInitialization": false,
-    "types": [
-      "vitest/globals",
-      "node"
-    ],
+    "types": ["vitest/globals", "node"],
     "paths": {
-      "@app/common": [
-        "./libs/common/src"
-      ],
-      "@app/common/*": [
-        "./libs/common/src/*"
-      ],
-      "@app/contracts": [
-        "./libs/contracts/src"
-      ],
-      "@app/contracts/*": [
-        "./libs/contracts/src/*"
-      ],
-      "@app/proto": [
-        "./libs/proto/src"
-      ],
-      "@app/proto/*": [
-        "./libs/proto/src/*"
-      ]
+      "@app/common": ["./libs/common/src/index.ts"],
+      "@app/common/*": ["./libs/common/src/*"],
+      "@app/contracts": ["./libs/contracts/src/index.ts"],
+      "@app/contracts/*": ["./libs/contracts/src/*"],
+      "@app/proto": ["./libs/proto/src/index.ts"],
+      "@app/proto/*": ["./libs/proto/src/*"]
     }
   },
   "files": [],
@@ -48,13 +33,10 @@
       "path": "./apps/funcionarios/tsconfig.app.json"
     },
     {
-      "path": "./apps/gateway/tsconfig.app.json"
+      "path": "./apps/api-gateway/tsconfig.app.json"
     },
     {
-      "path": "./apps/gestao-rh/tsconfig.app.json"
-    },
-    {
-      "path": "./apps/departamento/tsconfig.app.json"
+      "path": "./apps/departamentos/tsconfig.app.json"
     }
   ]
 }

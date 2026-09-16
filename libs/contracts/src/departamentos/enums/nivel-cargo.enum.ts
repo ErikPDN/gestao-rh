@@ -1,0 +1,7 @@
+export enum NivelCargo {
+  TRAINEE = 'TRAINEE',
+  JUNIOR = 'JUNIOR',
+  PLENO = 'PLENO',
+  SENIOR = 'SENIOR',
+  ESPECIALISTA = 'ESPECIALISTA',
+}
