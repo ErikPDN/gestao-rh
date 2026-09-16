@@ -45,10 +45,16 @@
   "files": [],
   "references": [
     {
-      "path": "./apps/gestao-rh/tsconfig.app.json"
+      "path": "./apps/funcionarios/tsconfig.app.json"
     },
     {
       "path": "./apps/gateway/tsconfig.app.json"
+    },
+    {
+      "path": "./apps/gestao-rh/tsconfig.app.json"
+    },
+    {
+      "path": "./apps/departamento/tsconfig.app.json"
     }
   ]
 }
