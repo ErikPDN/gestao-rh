@@ -28,15 +28,6 @@
         "tsConfigPath": "libs/contracts/tsconfig.lib.json"
       }
     },
-    "departamento": {
-      "type": "application",
-      "root": "apps/departamento",
-      "entryFile": "main",
-      "sourceRoot": "apps/departamento/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/departamento/tsconfig.app.json"
-      }
-    },
     "funcionarios": {
       "type": "application",
       "root": "apps/funcionarios",
@@ -44,6 +35,15 @@
       "sourceRoot": "apps/funcionarios/src",
       "compilerOptions": {
         "tsConfigPath": "apps/funcionarios/tsconfig.app.json"
+      }
+    },
+    "departamentos": {
+      "type": "application",
+      "root": "apps/departamentos",
+      "entryFile": "main",
+      "sourceRoot": "apps/departamentos/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/departamentos/tsconfig.app.json"
       }
     },
     "api-gateway": {
