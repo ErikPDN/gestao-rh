@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package departamento;
+
+service DepartamentoService {
+    rpc GetDepartamento (GetDepartamentoRequest) returns (DepartamentoResponse);
+    rpc GetCargo (GetCargoRequest) returns (CargoResponse);
+}
+
+
+message GetDepartamentoRequest { string id = 1; }
+message DepartamentoResponse { 
+    string id = 1;
+    string nome = 2;
+}
+
+message GetCargoRequest {
+    string id = 1;
+}
+
+message CargoResponse {
+    string id = 1;
+    string nome = 2;
+    string departamentoId = 3;
+}
