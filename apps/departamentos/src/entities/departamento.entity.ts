@@ -11,6 +11,9 @@ export class Departamento {
   @Column({ name: 'descricao', type: 'varchar', length: 500, nullable: true })
   descricao?: string;
 
+  @Column({ name: 'gestor_id', type: 'uuid', nullable: true })
+  gestorId?: string;
+
   @CreateDateColumn({
     name: 'created_at',
     type: 'timestamp',

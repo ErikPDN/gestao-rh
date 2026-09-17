@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { DepartamentoController } from './departamento.controller.js';
-import { DepartamentoService } from './departamento.service.js';
+import { DepartamentoController } from './controllers/departamento.controller.js';
+import { DepartamentoService } from './services/departamento.service.js';
 import { ConfigModule } from '@nestjs/config';
 import { DepartamentoDatabase } from './database/ormconfig.departamento.js';
 import { TypeOrmModule } from '@nestjs/typeorm';
