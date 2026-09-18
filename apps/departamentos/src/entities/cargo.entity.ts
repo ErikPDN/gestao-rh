@@ -1,6 +1,13 @@
-import { Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  PrimaryColumn,
+} from 'typeorm';
 import { NivelCargo } from '../../../../libs/contracts/src/departamentos/enums/nivel-cargo.enum.js';
 
+@Index(['departamentoId', 'nome'], { unique: true })
 @Entity('cargo')
 export class Cargo {
   @PrimaryColumn({ name: 'id', type: 'uuid' })

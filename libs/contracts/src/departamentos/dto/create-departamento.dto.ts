@@ -9,8 +9,8 @@ import {
 
 export class CreateDepartamentoDto {
   @IsString({ message: 'O nome do departamento deve ser uma string' })
-  @MinLength(3, {
-    message: 'O nome do departamento deve ter no mínimo 3 caracteres',
+  @MinLength(2, {
+    message: 'O nome do departamento deve ter no mínimo 2 caracteres',
   })
   @MaxLength(255, {
     message: 'O nome do departamento deve ter no máximo 255 caracteres',

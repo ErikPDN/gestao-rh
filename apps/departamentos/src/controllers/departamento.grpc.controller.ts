@@ -1,23 +1,43 @@
 import { Controller } from '@nestjs/common';
 import { DepartamentoService } from '../services/departamento.service.js';
-import {
-  DEPARTAMENTO_SERVICE_NAME,
+import { DepartamentoServiceControllerMethods } from '@app/contracts';
+import type {
+  CargoResponse,
+  DepartamentoResponse,
+  DepartamentoServiceController,
+  GetCargoRequest,
   GetDepartamentoRequest,
 } from '@app/contracts';
-import { GrpcMethod } from '@nestjs/microservices';
+import { CargoService } from '../services/cargo.service.js';
 
 @Controller()
-export class DepartamentoGrpcController {
-  constructor(private readonly departamentoService: DepartamentoService) {}
+@DepartamentoServiceControllerMethods()
+export class DepartamentoGrpcController implements DepartamentoServiceController {
+  constructor(
+    private readonly departamentoService: DepartamentoService,
+    private readonly cargoService: CargoService,
+  ) {}
 
-  @GrpcMethod(DEPARTAMENTO_SERVICE_NAME, 'GetDepartamento')
-  async getDepartamento(id: string) {
+  async getDepartamento(
+    request: GetDepartamentoRequest,
+  ): Promise<DepartamentoResponse> {
+    const { id } = request;
     const departamento = await this.departamentoService.getDepartamento(id);
 
     return {
       id: departamento.id,
       nome: departamento.nome,
-      descricao: departamento.descricao,
+    };
+  }
+
+  async getCargo(request: GetCargoRequest): Promise<CargoResponse> {
+    const { id } = request;
+    const cargo = await this.cargoService.getCargo();
+
+    return {
+      id: cargo.id,
+      nome: cargo.nome,
+      departamentoId: cargo.departamentoId,
     };
   }
 }

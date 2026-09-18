@@ -7,7 +7,6 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Departamento } from '../entities/departamento.entity.js';
 import { Repository } from 'typeorm/repository/Repository.js';
-import { Cargo } from '../entities/cargo.entity.js';
 import { DepartamentoResult } from '@app/contracts/departamentos/interfaces/departamento-result.interface.js';
 import { CreateDepartamentoDto, UpdateDepartamentoDto } from '@app/contracts';
 
@@ -16,8 +15,6 @@ export class DepartamentoService {
   constructor(
     @InjectRepository(Departamento)
     private departamentoRepository: Repository<Departamento>,
-    @InjectRepository(Cargo)
-    private cargoRepository: Repository<Cargo>,
   ) {}
 
   async createDepartamento(
