@@ -5,7 +5,7 @@ export class Departamento {
   @PrimaryColumn({ name: 'id', type: 'uuid' })
   id!: string;
 
-  @Column({ name: 'nome', type: 'varchar', length: 255 })
+  @Column({ name: 'nome', type: 'varchar', length: 255, unique: true })
   nome!: string;
 
   @Column({ name: 'descricao', type: 'varchar', length: 500, nullable: true })

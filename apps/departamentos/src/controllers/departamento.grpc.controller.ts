@@ -11,7 +11,13 @@ export class DepartamentoGrpcController {
   constructor(private readonly departamentoService: DepartamentoService) {}
 
   @GrpcMethod(DEPARTAMENTO_SERVICE_NAME, 'GetDepartamento')
-  async getDepartamento({ id }: GetDepartamentoRequest) {
+  async getDepartamento(id: string) {
     const departamento = await this.departamentoService.getDepartamento(id);
+
+    return {
+      id: departamento.id,
+      nome: departamento.nome,
+      descricao: departamento.descricao,
+    };
   }
 }
