@@ -15,7 +15,8 @@ message DepartamentoResponse {
 }
 
 message GetCargoRequest {
-    string id = 1;
+    string cargoId = 1;
+    string departamentoId = 2;
 }
 
 message CargoResponse {

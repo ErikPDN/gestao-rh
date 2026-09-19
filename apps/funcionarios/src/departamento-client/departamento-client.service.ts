@@ -41,4 +41,21 @@ export class DepartamentoClientService implements OnModuleInit {
       );
     }
   }
+
+  async getCargo(cargoId: string, departamentoId: string) {
+    try {
+      return await this.departamentoService.getCargo({
+        cargoId,
+        departamentoId,
+      });
+    } catch (err) {
+      const error = err as ServiceError;
+      throw new HttpException(
+        error.details ?? 'Internal Server Error',
+        error.code === status.NOT_FOUND
+          ? HttpStatus.NOT_FOUND
+          : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 }

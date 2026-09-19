@@ -2,8 +2,8 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  DeleteDateColumn,
   PrimaryColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity('funcionario')
@@ -32,6 +32,9 @@ export class Funcionario {
   @Column({ name: 'data_admissao', type: 'date' })
   dataAdmissao!: Date;
 
+  @Column({ name: 'data_demissao', type: 'date', nullable: true })
+  dataDemissao?: Date;
+
   @CreateDateColumn({
     name: 'created_at',
     type: 'timestamp',
@@ -39,18 +42,10 @@ export class Funcionario {
   })
   createdAt!: Date;
 
-  @CreateDateColumn({
+  @UpdateDateColumn({
     name: 'updated_at',
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
-    onUpdate: 'CURRENT_TIMESTAMP',
   })
   updatedAt!: Date;
-
-  @DeleteDateColumn({
-    name: 'deleted_at',
-    type: 'timestamp',
-    nullable: true,
-  })
-  deletedAt?: Date;
 }
