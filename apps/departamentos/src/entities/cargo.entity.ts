@@ -4,6 +4,7 @@ import {
   Entity,
   Index,
   PrimaryColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { NivelCargo } from '../../../../libs/contracts/src/departamentos/enums/nivel-cargo.enum.js';
 
@@ -50,11 +51,10 @@ export class Cargo {
   })
   createdAt!: Date;
 
-  @CreateDateColumn({
+  @UpdateDateColumn({
     name: 'updated_at',
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
-    onUpdate: 'CURRENT_TIMESTAMP',
   })
   updatedAt!: Date;
 
