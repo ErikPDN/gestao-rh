@@ -20,7 +20,8 @@ export interface DepartamentoResponse {
 }
 
 export interface GetCargoRequest {
-  id: string;
+  cargoId: string;
+  departamentoId: string;
 }
 
 export interface CargoResponse {

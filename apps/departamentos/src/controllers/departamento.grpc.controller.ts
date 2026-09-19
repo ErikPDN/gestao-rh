@@ -31,8 +31,8 @@ export class DepartamentoGrpcController implements DepartamentoServiceController
   }
 
   async getCargo(request: GetCargoRequest): Promise<CargoResponse> {
-    const { id } = request;
-    const cargo = await this.cargoService.getCargo();
+    const { cargoId, departamentoId } = request;
+    const cargo = await this.cargoService.getCargo(cargoId, departamentoId);
 
     return {
       id: cargo.id,
