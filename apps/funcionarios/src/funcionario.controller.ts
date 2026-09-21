@@ -1,7 +1,15 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { FuncionarioService } from './funcionario.service.js';
+import { GetFuncionariosQueryDto } from '@app/contracts';
 
-@Controller()
+@Controller('funcionarios')
 export class FuncionarioController {
-  constructor(private readonly funcionarioService: FuncionarioService) {}
+  constructor(private readonly funcionarioService: FuncionarioService) { }
+
+  @Get()
+  getFuncionarios(
+    @Query() query: GetFuncionariosQueryDto
+  ) {
+    return this.funcionarioService.getFuncionarios(query.funcionariosIds)
+  }
 }
