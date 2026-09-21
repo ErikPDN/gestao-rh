@@ -9,6 +9,7 @@ import { Repository } from 'typeorm/repository/Repository.js';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CargoResult, CreateCargoDto, UpdateCargoDto } from '@app/contracts';
 import { Departamento } from '../entities/departamento.entity.js';
+import { In } from 'typeorm/find-options/operator/In.js';
 
 @Injectable()
 export class CargoService {
@@ -73,6 +74,16 @@ export class CargoService {
     }
 
     return this.toCargoResult(cargo);
+  }
+
+  async getCargos(ids: string[]): Promise<CargoResult[]> {
+    if (ids.length === 0) return [];
+
+    const cargos = await this.cargoRepository.find({
+      where: { id: In(ids) },
+    });
+
+    return cargos.map((cargo) => this.toCargoResult(cargo));
   }
 
   async listCargos(idDepartamento: string): Promise<CargoResult[]> {
@@ -147,8 +158,8 @@ export class CargoService {
       id: cargo.id,
       nome: cargo.nome,
       departamentoId: cargo.departamentoId,
-      salarioBase: cargo.salarioBase,
-      salarioTeto: cargo.salarioTeto,
+      salarioBase: Number(cargo.salarioBase),
+      salarioTeto: Number(cargo.salarioTeto),
       nivel: cargo.nivel,
       createdAt: cargo.createdAt,
       updatedAt: cargo.updatedAt,

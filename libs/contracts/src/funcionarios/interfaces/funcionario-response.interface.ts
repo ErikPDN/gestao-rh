@@ -1,9 +1,11 @@
 export interface FuncionarioResponse {
   id: string;
+  cpfCnpj: string;
   nome: string;
-  email: string;
-  cargo: string;
   departamento: string;
+  cargo: string;
   salario: number;
-  dataAdmissao: string;
+  dataNascimento: Date;
+  dataAdmissao: Date;
+  dataDemissao?: Date;
 }

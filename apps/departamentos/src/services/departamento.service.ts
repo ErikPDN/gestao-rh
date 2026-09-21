@@ -9,6 +9,7 @@ import { Departamento } from '../entities/departamento.entity.js';
 import { Repository } from 'typeorm/repository/Repository.js';
 import { DepartamentoResult } from '@app/contracts/departamentos/interfaces/departamento-result.interface.js';
 import { CreateDepartamentoDto, UpdateDepartamentoDto } from '@app/contracts';
+import { In } from 'typeorm/find-options/operator/In.js';
 
 @Injectable()
 export class DepartamentoService {
@@ -51,6 +52,18 @@ export class DepartamentoService {
       throw new NotFoundException(`Departamento com id ${id} não encontrado`);
 
     return this.toDepartamentoResult(departamento);
+  }
+
+  async getDepartamentos(ids: string[]): Promise<DepartamentoResult[]> {
+    if (ids.length === 0) return [];
+
+    const departamentos = await this.departamentoRepository.find({
+      where: { id: In(ids) },
+    });
+
+    return departamentos.map((departamento) =>
+      this.toDepartamentoResult(departamento),
+    );
   }
 
   async updateDepartamento(

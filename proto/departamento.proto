@@ -4,14 +4,25 @@ package departamento;
 
 service DepartamentoService {
     rpc GetDepartamento (GetDepartamentoRequest) returns (DepartamentoResponse);
+    rpc GetDepartamentos (ListByIdsRequest) returns (DepartamentosResponse);
     rpc GetCargo (GetCargoRequest) returns (CargoResponse);
+    rpc GetCargos (ListByIdsRequest) returns (CargosResponse);
 }
 
 
 message GetDepartamentoRequest { string id = 1; }
+
+message ListByIdsRequest {
+    repeated string ids = 1;
+}
+
 message DepartamentoResponse { 
     string id = 1;
     string nome = 2;
+}
+
+message DepartamentosResponse {
+    repeated DepartamentoResponse departamentos = 1;
 }
 
 message GetCargoRequest {
@@ -23,4 +34,10 @@ message CargoResponse {
     string id = 1;
     string nome = 2;
     string departamentoId = 3;
+    double salarioBase = 4;
+    double salarioTeto = 5;
+}
+
+message CargosResponse {
+    repeated CargoResponse cargos = 1;
 }
