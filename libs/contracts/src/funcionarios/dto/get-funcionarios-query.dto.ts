@@ -16,5 +16,5 @@ export class GetFuncionariosQueryDto {
     each: true,
     message: 'Todos os ids de funcionarios ter um id válido',
   })
-  funcionariosIds: string[];
+  funcionarioIds: string[];
 }
