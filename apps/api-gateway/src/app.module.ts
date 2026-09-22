@@ -1,9 +1,14 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
+import { ConfigModule } from '@nestjs/config';
+import { FuncionarioModule } from './funcionarios-service/funcionario-service.module.js';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ['./apps/api-gateway/.env', '.env'],
+    }),
+    FuncionarioModule,
+  ],
 })
-export class AppModule {}
+export class AppModule { }
