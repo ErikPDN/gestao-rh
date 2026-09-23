@@ -33,7 +33,18 @@ export class DepartamentoService {
     return response.data;
   }
 
-  //TODO: Adicionar endpoint de getDepartamentos
+  async getDepartamentos(departamentoIds: string[]) {
+    const response = await firstValueFrom(
+      this.httpService
+        .get<DepartamentoResult[]>(`${this.apiUrl}/departamentos`, {
+          params: {
+            departamentoIds: departamentoIds.join(',')
+          }
+        })
+    )
+
+    return response.data;
+  }
 
   async updateDepartamento(id: string, dto: UpdateDepartamentoDto) {
     const response = await firstValueFrom(
@@ -64,5 +75,4 @@ export class DepartamentoService {
       );
     });
   }
-
 }

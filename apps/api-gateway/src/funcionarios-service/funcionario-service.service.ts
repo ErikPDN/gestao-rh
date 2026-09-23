@@ -9,9 +9,7 @@ export class FuncionarioService {
   private readonly logger = new Logger(FuncionarioService.name);
 
   constructor(
-    @Inject('FUNCIONARIO_SERVICE_URL') private readonly apiUrl: string,
-    private readonly httpService: HttpService
-  ) { }
+    @Inject('FUNCIONARIO_SERVICE_URL') private readonly apiUrl: string, private readonly httpService: HttpService) { }
 
   async getFuncionarios(funcionarioIds: string[]) {
     const response = await firstValueFrom(

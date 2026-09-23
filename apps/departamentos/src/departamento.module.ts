@@ -7,6 +7,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DepartamentoGrpcController } from './controllers/departamento.grpc.controller.js';
 import { CargoController } from './controllers/cargo.controller.js';
 import { CargoService } from './services/cargo.service.js';
+import { Departamento } from './entities/departamento.entity.js';
+import { Cargo } from './entities/cargo.entity.js';
 
 @Module({
   imports: [
@@ -15,6 +17,7 @@ import { CargoService } from './services/cargo.service.js';
       envFilePath: ['./apps/departamentos/.env', '.env'],
     }),
     TypeOrmModule.forRoot({ ...DepartamentoDatabase }),
+    TypeOrmModule.forFeature([Departamento, Cargo])
   ],
   controllers: [
     DepartamentoController,
@@ -23,4 +26,4 @@ import { CargoService } from './services/cargo.service.js';
   ],
   providers: [DepartamentoService, CargoService],
 })
-export class DepartamentoModule {}
+export class DepartamentoModule { }

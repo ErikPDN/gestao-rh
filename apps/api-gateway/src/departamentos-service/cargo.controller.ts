@@ -1,6 +1,6 @@
-import { CreateCargoDto, UpdateCargoDto } from '@app/contracts';
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
-import { CargoService } from '../services/cargo.service.js';
+import { Controller, Param, Post, Body, Get, Patch } from "@nestjs/common";
+import { CargoService } from "./cargo.service.js";
+import { CargoResult, CreateCargoDto, UpdateCargoDto } from "@app/contracts";
 
 @Controller('departamentos/:departamentoId/cargos')
 export class CargoController {
@@ -9,41 +9,39 @@ export class CargoController {
   @Post()
   createCargo(
     @Param('departamentoId') departamentoId: string,
-    @Body() createCargoDto: CreateCargoDto,
-  ) {
+    @Body() createCargoDto: CreateCargoDto
+  ): Promise<CargoResult> {
     return this.cargoService.createCargo(departamentoId, createCargoDto);
   }
 
   @Get()
-  getAllCargos(@Param('departamentoId') departamentoId: string) {
-    return this.cargoService.listCargos(departamentoId);
+  getAllCargos(
+    @Param('departamentoId') departamentoId: string
+  ): Promise<CargoResult[]> {
+    return this.cargoService.getAllCargos(departamentoId);
   }
 
   @Get(':cargoId')
-  getCargos(
+  getCargo(
     @Param('departamentoId') departamentoId: string,
-    @Param('cargoId') cargoId: string,
-  ) {
+    @Param('cargoId') cargoId: string
+  ): Promise<CargoResult> {
     return this.cargoService.getCargo(departamentoId, cargoId);
   }
 
-  @Patch(':cargoId')
+  @Patch()
   updateCargo(
     @Param('departamentoId') departamentoId: string,
     @Param('cargoId') cargoId: string,
-    @Body() updateCargoDto: UpdateCargoDto,
-  ) {
-    return this.cargoService.updateCargo(
-      departamentoId,
-      cargoId,
-      updateCargoDto,
-    );
+    @Body() updateCargoDto: UpdateCargoDto
+  ): Promise<CargoResult> {
+    return this.cargoService.updateCargo(departamentoId, cargoId, updateCargoDto);
   }
 
   @Post(':cargoId/desativar')
   desativarCargo(
     @Param('departamentoId') departamentoId: string,
-    @Param('cargoId') cargoId: string,
+    @Param('cargoId') cargoId: string
   ) {
     return this.cargoService.desativarCargo(departamentoId, cargoId);
   }

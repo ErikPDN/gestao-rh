@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
-import { DepartamentoService } from './departamento-service.service.js';
-import { CreateDepartamentoDto, UpdateDepartamentoDto } from '@app/contracts';
+import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { DepartamentoService } from './departamento.service.js';
+import { CreateDepartamentoDto, GetDepartamentosQueryDto, UpdateDepartamentoDto } from '@app/contracts';
 
 @Controller('departamentos')
 export class DepartamentoController {
@@ -13,12 +13,21 @@ export class DepartamentoController {
     return this.departamentoService.createDepartamento(createDepartamentoDto)
   }
 
+  @Get()
+  getDepartamentos(
+    @Query() query: GetDepartamentosQueryDto
+  ) {
+    return this.departamentoService.getDepartamentos(query.departamentoIds)
+  }
+
   @Get(':departamentoId')
   getDepartamento(
     @Param('departamentoId') departamentoId: string
   ) {
     return this.departamentoService.getDepartamento(departamentoId)
   }
+
+
 
   @Patch(':departamentoId')
   updateDepartamento(

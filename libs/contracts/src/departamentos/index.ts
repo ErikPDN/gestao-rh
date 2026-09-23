@@ -5,4 +5,5 @@ export * from './interfaces/cargo-result.interface.js';
 export * from './dto/create-departamento.dto.js';
 export * from './dto/update-departamento.dto.js';
 export * from './dto/create-cargo.dto.js';
+export * from './dto/get-departamento-query.dto.js'
 export * from './dto/update-cargo.dto.js';

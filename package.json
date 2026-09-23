@@ -6,6 +6,11 @@
   "private": true,
   "license": "UNLICENSED",
   "type": "module",
+  "pnpm": {
+    "overrides": {
+      "typeorm": "$typeorm"
+    }
+  },
   "scripts": {
     "build": "nest build",
     "deploy": "nest deploy",
