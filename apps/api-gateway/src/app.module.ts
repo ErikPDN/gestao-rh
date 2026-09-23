@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { FuncionarioModule } from './funcionarios-service/funcionario-service.module.js';
+import { DepartamentoModule } from './departamentos-service/departamento-service.module.js';
 
 @Module({
   imports: [
@@ -9,6 +10,7 @@ import { FuncionarioModule } from './funcionarios-service/funcionario-service.mo
       envFilePath: ['./apps/api-gateway/.env', '.env'],
     }),
     FuncionarioModule,
+    DepartamentoModule,
   ],
 })
 export class AppModule { }
