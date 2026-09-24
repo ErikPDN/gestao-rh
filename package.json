@@ -31,7 +31,8 @@
     "migration:run:funcionarios": "pnpm typeorm:funcionarios migration:run",
     "migration:generate:departamentos": "pnpm typeorm:departamentos migration:generate",
     "migration:run:departamentos": "pnpm typeorm:departamentos migration:run",
-    "proto:gen:departamento": "protoc --ts_proto_out=libs/contracts/src/departamentos/grpc --ts_proto_opt=nestJs=true proto/departamento.proto"
+    "proto:gen:departamento": "protoc --ts_proto_out=libs/contracts/src/departamentos/grpc --ts_proto_opt=nestJs=true proto/departamento.proto",
+    "proto:gen:funcionario": "protoc --ts_proto_out=libs/contracts/src/funcionarios/grpc --ts_proto_opt=nestJs=true proto/funcionario.proto"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.14.4",

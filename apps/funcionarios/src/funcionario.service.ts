@@ -9,7 +9,7 @@ import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   CreateFuncionarioDto,
-  FuncionarioResponse,
+  FuncionarioResult,
   UpdateFuncionarioDto,
   GetFuncionariosQueryDto,
 } from '@app/contracts';
@@ -26,7 +26,7 @@ export class FuncionarioService {
   async getFuncionarios(
     query: GetFuncionariosQueryDto,
   ) {
-    const { funcionarioIds, page, limit } = query;
+    const { funcionarioIds, page = 1, limit = 20 } = query;
     const isIdLookup = !!funcionarioIds?.length;
 
     const [funcionarios, total] = await this.funcionarioRepository.findAndCount({
@@ -61,7 +61,7 @@ export class FuncionarioService {
     }
   }
 
-  async getFuncionario(id: string): Promise<FuncionarioResponse> {
+  async getFuncionario(id: string): Promise<FuncionarioResult> {
     const funcionario = await this.funcionarioRepository.findOne({
       where: { id },
     });
@@ -87,7 +87,7 @@ export class FuncionarioService {
 
   async createFuncionario(
     dto: CreateFuncionarioDto,
-  ): Promise<FuncionarioResponse> {
+  ): Promise<FuncionarioResult> {
     const funcionarioExistente = await this.funcionarioRepository.findOne({
       where: { cpfCnpj: dto.cpfCnpj },
     });
@@ -142,7 +142,7 @@ export class FuncionarioService {
   async updateFuncionario(
     id: string,
     dto: UpdateFuncionarioDto,
-  ): Promise<FuncionarioResponse> {
+  ): Promise<FuncionarioResult> {
     const funcionario = await this.funcionarioRepository.findOne({
       where: { id },
     });
@@ -190,7 +190,7 @@ export class FuncionarioService {
     );
   }
 
-  async demitirFuncionario(id: string): Promise<FuncionarioResponse> {
+  async demitirFuncionario(id: string): Promise<FuncionarioResult> {
     const funcionario = await this.funcionarioRepository.findOne({
       where: { id },
     });
@@ -221,13 +221,15 @@ export class FuncionarioService {
     funcionario: Funcionario,
     departamentoNome: string,
     cargoNome: string,
-  ): FuncionarioResponse {
+  ): FuncionarioResult {
     return {
       id: funcionario.id,
       cpfCnpj: funcionario.cpfCnpj,
       nome: funcionario.nome,
       departamento: departamentoNome,
+      departamentoId: funcionario.departamentoId,
       cargo: cargoNome,
+      cargoId: funcionario.cargoId,
       salario: funcionario.salario,
       dataNascimento: funcionario.dataNascimento,
       dataAdmissao: funcionario.dataAdmissao,

@@ -1,6 +1,6 @@
 import { Controller, Get, Query, Param, ParseUUIDPipe, Post, Body, Patch } from '@nestjs/common';
-import { FuncionarioService } from './funcionario.service.js';
 import { GetFuncionariosQueryDto, CreateFuncionarioDto, UpdateFuncionarioDto } from '@app/contracts';
+import { FuncionarioService } from '../funcionario.service.js';
 
 @Controller('funcionarios')
 export class FuncionarioController {

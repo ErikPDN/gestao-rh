@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package funcionario;
+
+service FuncionarioService {
+    rpc GetFuncionario (GetFuncionarioRequest) returns (FuncionarioResponse);
+}
+
+message GetFuncionarioRequest {
+    string id = 1;
+}
+
+message FuncionarioResponse {
+    string id = 1;
+    string nome = 2;
+    string cargoId = 3;
+    string departamentoId = 4;
+    double salario = 5;
+}

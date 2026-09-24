@@ -9,6 +9,7 @@ import { CargoController } from './controllers/cargo.controller.js';
 import { CargoService } from './services/cargo.service.js';
 import { Departamento } from './entities/departamento.entity.js';
 import { Cargo } from './entities/cargo.entity.js';
+import { FuncionarioClientModule } from './funcionario-client/funcionario-client.module.js';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { Cargo } from './entities/cargo.entity.js';
       envFilePath: ['./apps/departamentos/.env', '.env'],
     }),
     TypeOrmModule.forRoot({ ...DepartamentoDatabase }),
-    TypeOrmModule.forFeature([Departamento, Cargo])
+    TypeOrmModule.forFeature([Departamento, Cargo]),
+    FuncionarioClientModule,
   ],
   controllers: [
     DepartamentoController,
