@@ -8,7 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Departamento } from '../entities/departamento.entity.js';
 import { Repository } from 'typeorm/repository/Repository.js';
 import { DepartamentoResult } from '@app/contracts/departamentos/interfaces/departamento-result.interface.js';
-import { CreateDepartamentoDto, UpdateDepartamentoDto } from '@app/contracts';
+import { CreateDepartamentoDto, GetDepartamentosQueryDto, UpdateDepartamentoDto } from '@app/contracts';
 import { In } from 'typeorm/find-options/operator/In.js';
 
 @Injectable()
@@ -16,7 +16,7 @@ export class DepartamentoService {
   constructor(
     @InjectRepository(Departamento)
     private departamentoRepository: Repository<Departamento>,
-  ) {}
+  ) { }
 
   async createDepartamento(
     dto: CreateDepartamentoDto,
@@ -54,16 +54,23 @@ export class DepartamentoService {
     return this.toDepartamentoResult(departamento);
   }
 
-  async getDepartamentos(ids: string[]): Promise<DepartamentoResult[]> {
-    if (ids.length === 0) return [];
+  async getDepartamentos(filtro: GetDepartamentosQueryDto) {
+    const { departamentoIds, page = 1, limit = 20 } = filtro;
+    const isIdLookup = !!departamentoIds?.length;
 
-    const departamentos = await this.departamentoRepository.find({
-      where: { id: In(ids) },
+    const [departamentos, total] = await this.departamentoRepository.findAndCount({
+      where: isIdLookup ? { id: In(departamentoIds) } : {},
+      ...(isIdLookup ? {} : { skip: (page - 1) * limit, take: limit }),
     });
 
-    return departamentos.map((departamento) =>
-      this.toDepartamentoResult(departamento),
-    );
+    return {
+      data: departamentos.map((departamento) =>
+        this.toDepartamentoResult(departamento),
+      ),
+      total,
+      page: isIdLookup ? 1 : page,
+      limit: isIdLookup ? total : limit,
+    };
   }
 
   async updateDepartamento(

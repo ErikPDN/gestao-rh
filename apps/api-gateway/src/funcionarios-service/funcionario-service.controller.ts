@@ -11,7 +11,7 @@ export class FuncionarioController {
   getFuncionarios(
     @Query() query: GetFuncionariosQueryDto
   ) {
-    return this.funcionarioService.getFuncionarios(query.funcionarioIds)
+    return this.funcionarioService.getFuncionarios(query)
   }
 
   @Post()

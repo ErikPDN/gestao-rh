@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FuncionarioDatabase } from './database/ormconfig.funcionario.js';
 import { DepartamentoClientModule } from './departamento-client/departamento-client.module.js';
+import { Funcionario } from './entities/funcionario.entity.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -16,9 +17,10 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
       envFilePath: ['./apps/funcionarios/.env', '.env'],
     }),
     TypeOrmModule.forRoot({ ...FuncionarioDatabase }),
+    TypeOrmModule.forFeature([Funcionario]),
     DepartamentoClientModule,
   ],
   controllers: [FuncionarioController],
   providers: [FuncionarioService],
 })
-export class FuncionarioModule {}
+export class FuncionarioModule { }

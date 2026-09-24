@@ -1,10 +1,20 @@
-import { ArrayMaxSize, ArrayNotEmpty, IsArray, IsUUID } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
+import {
+  ArrayMaxSize,
+  ArrayNotEmpty,
+  IsArray,
+  IsInt,
+  IsOptional,
+  IsUUID,
+  Max,
+  Min,
+} from 'class-validator';
 
 export class GetDepartamentosQueryDto {
+  @IsOptional()
   @Transform(({ value }) =>
     value == null
-      ? []
+      ? undefined
       : Array.isArray(value)
         ? value
         : String(value).split(','),
@@ -16,5 +26,18 @@ export class GetDepartamentosQueryDto {
     each: true,
     message: 'Todos os ids devem ser UUIDs válidos',
   })
-  departamentoIds: string[];
+  departamentoIds?: string[];
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  page: number = 1;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  limit: number = 20;
 }

@@ -17,7 +17,7 @@ export class DepartamentoController {
   getDepartamentos(
     @Query() query: GetDepartamentosQueryDto
   ) {
-    return this.departamentoService.getDepartamentos(query.departamentoIds)
+    return this.departamentoService.getDepartamentos(query)
   }
 
   @Get(':departamentoId')

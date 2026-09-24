@@ -11,6 +11,7 @@ import {
   CreateFuncionarioDto,
   FuncionarioResponse,
   UpdateFuncionarioDto,
+  GetFuncionariosQueryDto,
 } from '@app/contracts';
 import { DepartamentoClientService } from './departamento-client/departamento-client.service.js';
 
@@ -20,16 +21,18 @@ export class FuncionarioService {
     @InjectRepository(Funcionario)
     private funcionarioRepository: Repository<Funcionario>,
     private readonly departamentoClient: DepartamentoClientService,
-  ) {}
+  ) { }
 
   async getFuncionarios(
-    funcionarioIds: string[],
-  ): Promise<FuncionarioResponse[]> {
-    const funcionarios = await this.funcionarioRepository.find({
-      where: {
-        id: In(funcionarioIds),
-      },
-    });
+    query: GetFuncionariosQueryDto,
+  ) {
+    const { funcionarioIds, page, limit } = query;
+    const isIdLookup = !!funcionarioIds?.length;
+
+    const [funcionarios, total] = await this.funcionarioRepository.findAndCount({
+      where: isIdLookup ? { id: In(funcionarioIds) } : {},
+      ...(isIdLookup ? {} : { skip: (page - 1) * limit, take: limit }),
+    })
 
     const departamentosIds = [
       ...new Set(funcionarios.map((f) => f.departamentoId)),
@@ -44,13 +47,18 @@ export class FuncionarioService {
     const departamentoPorId = new Map(departamentos.map((d) => [d.id, d]));
     const cargoPorId = new Map(cargos.map((c) => [c.id, c]));
 
-    return funcionarios.map((f) =>
-      this.toFuncionarioResponse(
-        f,
-        departamentoPorId.get(f.departamentoId)?.nome ?? '',
-        cargoPorId.get(f.cargoId)?.nome ?? '',
+    return {
+      data: funcionarios.map((f) =>
+        this.toFuncionarioResponse(
+          f,
+          departamentoPorId.get(f.departamentoId)?.nome ?? '',
+          cargoPorId.get(f.cargoId)?.nome ?? '',
+        ),
       ),
-    );
+      total,
+      page: isIdLookup ? 1 : page,
+      limit: isIdLookup ? total : limit,
+    }
   }
 
   async getFuncionario(id: string): Promise<FuncionarioResponse> {

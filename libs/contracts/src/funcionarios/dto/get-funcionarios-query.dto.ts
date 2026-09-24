@@ -1,10 +1,12 @@
-import { ArrayMaxSize, ArrayNotEmpty, IsArray, IsUUID } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { ArrayMaxSize, ArrayNotEmpty, IsArray, IsOptional, IsUUID, IsInt, Min, Max } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class GetFuncionariosQueryDto {
+  @IsOptional()
   @Transform(({ value }) =>
     value == null
-      ? []
+      ? undefined
       : Array.isArray(value)
         ? value
         : String(value).split(','),
@@ -16,5 +18,19 @@ export class GetFuncionariosQueryDto {
     each: true,
     message: 'Todos os ids de funcionarios ter um id válido',
   })
-  funcionarioIds: string[];
+  funcionarioIds?: string[];
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  page: number = 1;
+
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  limit: number = 20;
 }

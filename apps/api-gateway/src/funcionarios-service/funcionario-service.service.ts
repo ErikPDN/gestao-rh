@@ -2,7 +2,12 @@ import { Inject, Injectable, Logger, HttpException, HttpStatus } from '@nestjs/c
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom, catchError, OperatorFunction } from 'rxjs';
 import { AxiosError } from 'axios';
-import { FuncionarioResponse, CreateFuncionarioDto, UpdateFuncionarioDto } from '@app/contracts';
+import {
+  FuncionarioResponse,
+  CreateFuncionarioDto,
+  UpdateFuncionarioDto,
+  GetFuncionariosQueryDto,
+} from '@app/contracts';
 
 @Injectable()
 export class FuncionarioService {
@@ -11,13 +16,22 @@ export class FuncionarioService {
   constructor(
     @Inject('FUNCIONARIO_SERVICE_URL') private readonly apiUrl: string, private readonly httpService: HttpService) { }
 
-  async getFuncionarios(funcionarioIds: string[]) {
+  async getFuncionarios(query: GetFuncionariosQueryDto) {
     const response = await firstValueFrom(
       this.httpService
-        .get<FuncionarioResponse[]>(`${this.apiUrl}/funcionarios`, {
+        .get<{
+          data: FuncionarioResponse[];
+          total: number;
+          page: number;
+          limit: number;
+        }>(`${this.apiUrl}/funcionarios`, {
           params: {
-            funcionarioIds: funcionarioIds.join(',')
-          }
+            ...(query.funcionarioIds?.length
+              ? { funcionarioIds: query.funcionarioIds.join(',') }
+              : {}),
+            page: query.page,
+            limit: query.limit,
+          },
         })
         .pipe(this.handleError('Error fetching funcionarios'))
     )

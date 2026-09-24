@@ -37,7 +37,9 @@ export class DepartamentoGrpcController implements DepartamentoServiceController
     request: ListByIdsRequest,
   ): Promise<DepartamentosResponse> {
     const { ids } = request;
-    const departamentos = await this.departamentoService.getDepartamentos(ids);
+    const { data: departamentos } = await this.departamentoService.getDepartamentos({
+      departamentoIds: ids,
+    });
 
     return {
       departamentos: departamentos.map((departamento) => ({

@@ -4,12 +4,10 @@ import {
   IsNumber,
   IsOptional,
   IsString,
-  Max,
   MaxLength,
   Min,
   MinLength,
-} from 'class-validator';
-import { NivelCargo } from '../enums/nivel-cargo.enum.js';
+} from 'class-validator'; import { NivelCargo } from '../enums/nivel-cargo.enum.js';
 
 export class CreateCargoDto {
   @IsString({ message: 'O nome do cargo deve ser uma string' })

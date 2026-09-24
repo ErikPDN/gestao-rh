@@ -1,4 +1,9 @@
-import { CreateDepartamentoDto, DepartamentoResult, UpdateDepartamentoDto } from "@app/contracts";
+import {
+  CreateDepartamentoDto,
+  DepartamentoResult,
+  GetDepartamentosQueryDto,
+  UpdateDepartamentoDto,
+} from "@app/contracts";
 import { HttpException, HttpStatus, Inject, Injectable, Logger } from "@nestjs/common";
 import { catchError, firstValueFrom, OperatorFunction } from "rxjs";
 import { HttpService } from "@nestjs/axios";
@@ -33,14 +38,24 @@ export class DepartamentoService {
     return response.data;
   }
 
-  async getDepartamentos(departamentoIds: string[]) {
+  async getDepartamentos(query: GetDepartamentosQueryDto) {
     const response = await firstValueFrom(
       this.httpService
-        .get<DepartamentoResult[]>(`${this.apiUrl}/departamentos`, {
+        .get<{
+          data: DepartamentoResult[];
+          total: number;
+          page: number;
+          limit: number;
+        }>(`${this.apiUrl}/departamentos`, {
           params: {
-            departamentoIds: departamentoIds.join(',')
-          }
+            ...(query.departamentoIds?.length
+              ? { departamentoIds: query.departamentoIds.join(',') }
+              : {}),
+            page: query.page,
+            limit: query.limit,
+          },
         })
+        .pipe(this.handleError('Error fetching departamentos'))
     )
 
     return response.data;
