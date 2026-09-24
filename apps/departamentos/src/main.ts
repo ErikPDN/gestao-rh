@@ -29,7 +29,7 @@ async function bootstrap() {
   );
 
   await app.startAllMicroservices();
-  await app.listen(process.env.PORT ?? 3002);
-  console.log(`Departamento está rodando em: ${process.env.PORT ?? 3002}`);
+  await app.listen(process.env.PORT ?? 3003);
+  console.log(`Departamento está rodando em: ${process.env.PORT ?? 3003}`);
 }
 await bootstrap();

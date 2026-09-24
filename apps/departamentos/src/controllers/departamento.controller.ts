@@ -1,14 +1,21 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { DepartamentoService } from '../services/departamento.service.js';
-import { CreateDepartamentoDto, UpdateDepartamentoDto } from '@app/contracts';
+import { CreateDepartamentoDto, GetDepartamentosQueryDto, UpdateDepartamentoDto } from '@app/contracts';
 
 @Controller('departamentos')
 export class DepartamentoController {
-  constructor(private readonly departamentoService: DepartamentoService) {}
+  constructor(private readonly departamentoService: DepartamentoService) { }
 
   @Post()
   createDepartamento(@Body() createDepartamentoDto: CreateDepartamentoDto) {
     return this.departamentoService.createDepartamento(createDepartamentoDto);
+  }
+
+  @Get()
+  getDepartamentos(
+    @Query() query: GetDepartamentosQueryDto
+  ) {
+    return this.departamentoService.getDepartamentos(query)
   }
 
   @Get(':departamentoId')

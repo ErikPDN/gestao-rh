@@ -5,7 +5,6 @@ import { Funcionario } from '../entities/funcionario.entity.js';
 dotenv.config({ path: './apps/funcionarios/.env' });
 
 export const FuncionarioDatabase: TypeOrmModuleOptions = {
-  name: 'funcionario',
   type: 'postgres',
   username: process.env.DB_USERNAME_FUNCIONARIO,
   password: process.env.DB_PASSWORD_FUNCIONARIO,

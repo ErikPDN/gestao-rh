@@ -6,7 +6,6 @@ import { Departamento } from '../entities/departamento.entity.js';
 dotenv.config({ path: './apps/departamentos/.env' });
 
 export const DepartamentoDatabase: TypeOrmModuleOptions = {
-  name: 'departamento',
   type: 'postgres',
   username: process.env.DB_USERNAME_DEPARTAMENTO,
   password: process.env.DB_PASSWORD_DEPARTAMENTO,

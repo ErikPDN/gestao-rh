@@ -14,9 +14,17 @@ export interface GetDepartamentoRequest {
   id: string;
 }
 
+export interface ListByIdsRequest {
+  ids: string[];
+}
+
 export interface DepartamentoResponse {
   id: string;
   nome: string;
+}
+
+export interface DepartamentosResponse {
+  departamentos: DepartamentoResponse[];
 }
 
 export interface GetCargoRequest {
@@ -28,6 +36,12 @@ export interface CargoResponse {
   id: string;
   nome: string;
   departamentoId: string;
+  salarioBase: number;
+  salarioTeto: number;
+}
+
+export interface CargosResponse {
+  cargos: CargoResponse[];
 }
 
 export const DEPARTAMENTO_PACKAGE_NAME = "departamento";
@@ -35,7 +49,11 @@ export const DEPARTAMENTO_PACKAGE_NAME = "departamento";
 export interface DepartamentoServiceClient {
   getDepartamento(request: GetDepartamentoRequest): Observable<DepartamentoResponse>;
 
+  getDepartamentos(request: ListByIdsRequest): Observable<DepartamentosResponse>;
+
   getCargo(request: GetCargoRequest): Observable<CargoResponse>;
+
+  getCargos(request: ListByIdsRequest): Observable<CargosResponse>;
 }
 
 export interface DepartamentoServiceController {
@@ -43,12 +61,18 @@ export interface DepartamentoServiceController {
     request: GetDepartamentoRequest,
   ): Promise<DepartamentoResponse> | Observable<DepartamentoResponse> | DepartamentoResponse;
 
+  getDepartamentos(
+    request: ListByIdsRequest,
+  ): Promise<DepartamentosResponse> | Observable<DepartamentosResponse> | DepartamentosResponse;
+
   getCargo(request: GetCargoRequest): Promise<CargoResponse> | Observable<CargoResponse> | CargoResponse;
+
+  getCargos(request: ListByIdsRequest): Promise<CargosResponse> | Observable<CargosResponse> | CargosResponse;
 }
 
 export function DepartamentoServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["getDepartamento", "getCargo"];
+    const grpcMethods: string[] = ["getDepartamento", "getDepartamentos", "getCargo", "getCargos"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("DepartamentoService", method)(constructor.prototype[method], method, descriptor);

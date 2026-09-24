@@ -28,6 +28,7 @@ export class CreateDepartamentoDto {
   @IsUUID('4', { message: 'O ID do gestor deve ser um UUID válido' })
   gestorId?: string;
 
+  @IsOptional()
   @IsBoolean({ message: 'O campo ativo deve ser um valor booleano' })
-  ativo: boolean;
+  ativo?: boolean;
 }
