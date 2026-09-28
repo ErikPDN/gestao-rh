@@ -14,7 +14,8 @@ import { ConfigService } from '@nestjs/config';
       useFactory: (configService: ConfigService) =>
         configService.get<string>('FUNCIONARIO_SERVICE_URL'),
       inject: [ConfigService],
-    }
+    },
   ],
+  exports: [FuncionarioService],
 })
-export class FuncionarioModule { }
+export class FuncionarioModule {}

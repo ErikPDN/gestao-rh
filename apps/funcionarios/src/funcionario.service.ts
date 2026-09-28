@@ -12,6 +12,7 @@ import {
   FuncionarioResult,
   UpdateFuncionarioDto,
   GetFuncionariosQueryDto,
+  FuncionarioDashboardResult,
 } from '@app/contracts';
 import { DepartamentoClientService } from './departamento-client/departamento-client.service.js';
 
@@ -21,18 +22,18 @@ export class FuncionarioService {
     @InjectRepository(Funcionario)
     private funcionarioRepository: Repository<Funcionario>,
     private readonly departamentoClient: DepartamentoClientService,
-  ) { }
+  ) {}
 
-  async getFuncionarios(
-    query: GetFuncionariosQueryDto,
-  ) {
+  async getFuncionarios(query: GetFuncionariosQueryDto) {
     const { funcionarioIds, page = 1, limit = 20 } = query;
     const isIdLookup = !!funcionarioIds?.length;
 
-    const [funcionarios, total] = await this.funcionarioRepository.findAndCount({
-      where: isIdLookup ? { id: In(funcionarioIds) } : {},
-      ...(isIdLookup ? {} : { skip: (page - 1) * limit, take: limit }),
-    })
+    const [funcionarios, total] = await this.funcionarioRepository.findAndCount(
+      {
+        where: isIdLookup ? { id: In(funcionarioIds) } : {},
+        ...(isIdLookup ? {} : { skip: (page - 1) * limit, take: limit }),
+      },
+    );
 
     const departamentosIds = [
       ...new Set(funcionarios.map((f) => f.departamentoId)),
@@ -58,7 +59,7 @@ export class FuncionarioService {
       total,
       page: isIdLookup ? 1 : page,
       limit: isIdLookup ? total : limit,
-    }
+    };
   }
 
   async getFuncionario(id: string): Promise<FuncionarioResult> {
@@ -83,6 +84,71 @@ export class FuncionarioService {
       departamento?.nome ?? '',
       cargo?.nome ?? '',
     );
+  }
+
+  async getDashboard(): Promise<FuncionarioDashboardResult> {
+    const ativosQuery = this.funcionarioRepository
+      .createQueryBuilder('funcionario')
+      .where('funcionario.dataDemissao IS NULL');
+
+    const [ativos, total] = await Promise.all([
+      ativosQuery.getCount(),
+      this.funcionarioRepository.count(),
+    ]);
+
+    const somaSalarios = await ativosQuery
+      .clone()
+      .select('COALESCE(SUM(funcionario.salario), 0)', 'folhaSalarialMensal')
+      .getRawOne<{ folhaSalarialMensal: number }>();
+
+    const porDepartamentoRaw = await ativosQuery
+      .clone()
+      .select('funcionario.departamentoId', 'departamentoId')
+      .addSelect('COUNT(*)', 'quantidadeFuncionarios')
+      .groupBy('funcionario.departamentoId')
+      .getRawMany<{ departamentoId: string; quantidadeFuncionarios: number }>();
+
+    const adimitidosRecentemente = await this.funcionarioRepository.find({
+      order: { dataAdmissao: 'DESC' },
+      take: 5,
+    });
+
+    const departamentosIds = [
+      ...new Set([
+        ...porDepartamentoRaw.map((d) => d.departamentoId),
+        ...adimitidosRecentemente.map((f) => f.departamentoId),
+      ]),
+    ];
+
+    const cargosIds = [
+      ...new Set(adimitidosRecentemente.map((f) => f.cargoId)),
+    ];
+
+    const [departamentos, cargos] = await Promise.all([
+      this.departamentoClient.getDepartamentos(departamentosIds),
+      this.departamentoClient.getCargos(cargosIds),
+    ]);
+
+    const departamentoPorId = new Map(departamentos.map((d) => [d.id, d]));
+    const cargoPorId = new Map(cargos.map((c) => [c.id, c]));
+
+    return {
+      ativos,
+      desligados: total - ativos,
+      folhaSalarialMensal: Number(somaSalarios?.folhaSalarialMensal ?? 0),
+      funcionariosPorDepartamento: porDepartamentoRaw.map((row) => ({
+        departamentoId: row.departamentoId,
+        departamentoNome: departamentoPorId.get(row.departamentoId)?.nome ?? '',
+        quantidadeFuncionarios: Number(row.quantidadeFuncionarios),
+      })),
+      admissoesRecentes: adimitidosRecentemente.map((f) => ({
+        id: f.id,
+        funcionarioNome: f.nome,
+        departamentoNome: departamentoPorId.get(f.departamentoId)?.nome ?? '',
+        cargoNome: cargoPorId.get(f.cargoId)?.nome ?? '',
+        dataAdmissao: f.dataAdmissao,
+      })),
+    };
   }
 
   async createFuncionario(
