@@ -1,4 +1,10 @@
-import { Inject, Injectable, Logger, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  Logger,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom, catchError, OperatorFunction } from 'rxjs';
 import { AxiosError } from 'axios';
@@ -7,6 +13,7 @@ import {
   CreateFuncionarioDto,
   UpdateFuncionarioDto,
   GetFuncionariosQueryDto,
+  FuncionarioDashboardResult,
 } from '@app/contracts';
 
 @Injectable()
@@ -14,7 +21,9 @@ export class FuncionarioService {
   private readonly logger = new Logger(FuncionarioService.name);
 
   constructor(
-    @Inject('FUNCIONARIO_SERVICE_URL') private readonly apiUrl: string, private readonly httpService: HttpService) { }
+    @Inject('FUNCIONARIO_SERVICE_URL') private readonly apiUrl: string,
+    private readonly httpService: HttpService,
+  ) {}
 
   async getFuncionarios(query: GetFuncionariosQueryDto) {
     const response = await firstValueFrom(
@@ -33,8 +42,8 @@ export class FuncionarioService {
             limit: query.limit,
           },
         })
-        .pipe(this.handleError('Error fetching funcionarios'))
-    )
+        .pipe(this.handleError('Error fetching funcionarios')),
+    );
 
     return response.data;
   }
@@ -43,8 +52,20 @@ export class FuncionarioService {
     const response = await firstValueFrom(
       this.httpService
         .post<FuncionarioResponse>(`${this.apiUrl}/funcionarios`, dto)
-        .pipe(this.handleError('Error creating funcionario'))
-    )
+        .pipe(this.handleError('Error creating funcionario')),
+    );
+
+    return response.data;
+  }
+
+  async getDashboard() {
+    const response = await firstValueFrom(
+      this.httpService
+        .get<FuncionarioDashboardResult>(
+          `${this.apiUrl}/funcionarios/dashboard`,
+        )
+        .pipe(this.handleError('Error fetching dashboard')),
+    );
 
     return response.data;
   }
@@ -53,8 +74,8 @@ export class FuncionarioService {
     const response = await firstValueFrom(
       this.httpService
         .get<FuncionarioResponse>(`${this.apiUrl}/funcionarios/${id}`)
-        .pipe(this.handleError('Error fetching funcionario'))
-    )
+        .pipe(this.handleError('Error fetching funcionario')),
+    );
 
     return response.data;
   }
@@ -63,8 +84,8 @@ export class FuncionarioService {
     const response = await firstValueFrom(
       this.httpService
         .patch<FuncionarioResponse>(`${this.apiUrl}/funcionarios/${id}`, dto)
-        .pipe(this.handleError('Error updating funcionario'))
-    )
+        .pipe(this.handleError('Error updating funcionario')),
+    );
 
     return response.data;
   }
@@ -73,8 +94,8 @@ export class FuncionarioService {
     const response = await firstValueFrom(
       this.httpService
         .post<FuncionarioResponse>(`${this.apiUrl}/funcionarios/${id}/demitir`)
-        .pipe(this.handleError('Error demitindo funcionario'))
-    )
+        .pipe(this.handleError('Error demitindo funcionario')),
+    );
 
     return response.data;
   }

@@ -1,44 +1,54 @@
-import { Controller, Get, Query, Param, ParseUUIDPipe, Post, Body, Patch } from '@nestjs/common';
-import { GetFuncionariosQueryDto, CreateFuncionarioDto, UpdateFuncionarioDto } from '@app/contracts';
+import {
+  Controller,
+  Get,
+  Query,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Body,
+  Patch,
+} from '@nestjs/common';
+import {
+  GetFuncionariosQueryDto,
+  CreateFuncionarioDto,
+  UpdateFuncionarioDto,
+} from '@app/contracts';
 import { FuncionarioService } from '../funcionario.service.js';
 
 @Controller('funcionarios')
 export class FuncionarioController {
-  constructor(private readonly funcionarioService: FuncionarioService) { }
+  constructor(private readonly funcionarioService: FuncionarioService) {}
 
   @Get()
-  getFuncionarios(
-    @Query() query: GetFuncionariosQueryDto
-  ) {
-    return this.funcionarioService.getFuncionarios(query)
+  getFuncionarios(@Query() query: GetFuncionariosQueryDto) {
+    return this.funcionarioService.getFuncionarios(query);
+  }
+
+  @Get('dashboard')
+  getDashboard() {
+    return this.funcionarioService.getDashboard();
   }
 
   @Post()
-  createFuncionario(
-    @Body() dto: CreateFuncionarioDto
-  ) {
-    return this.funcionarioService.createFuncionario(dto)
+  createFuncionario(@Body() dto: CreateFuncionarioDto) {
+    return this.funcionarioService.createFuncionario(dto);
   }
 
   @Get(':funcionarioId')
-  getFuncionario(
-    @Param('funcionarioId', ParseUUIDPipe) id: string
-  ) {
-    return this.funcionarioService.getFuncionario(id)
+  getFuncionario(@Param('funcionarioId', ParseUUIDPipe) id: string) {
+    return this.funcionarioService.getFuncionario(id);
   }
 
   @Patch(':funcionarioId')
   updateFuncionario(
     @Param('funcionarioId', ParseUUIDPipe) id: string,
-    @Body() dto: UpdateFuncionarioDto
+    @Body() dto: UpdateFuncionarioDto,
   ) {
-    return this.funcionarioService.updateFuncionario(id, dto)
+    return this.funcionarioService.updateFuncionario(id, dto);
   }
 
   @Post(':funcionarioId/demitir')
-  demitirFuncionario(
-    @Param('funcionarioId', ParseUUIDPipe) id: string
-  ) {
-    return this.funcionarioService.demitirFuncionario(id)
+  demitirFuncionario(@Param('funcionarioId', ParseUUIDPipe) id: string) {
+    return this.funcionarioService.demitirFuncionario(id);
   }
 }

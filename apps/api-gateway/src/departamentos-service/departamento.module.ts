@@ -17,7 +17,8 @@ import { CargoService } from './cargo.service.js';
       useFactory: (configService: ConfigService) =>
         configService.get<string>('DEPARTAMENTO_SERVICE_URL'),
       inject: [ConfigService],
-    }
-  ]
+    },
+  ],
+  exports: [DepartamentoService, CargoService],
 })
-export class DepartamentoModule { }
+export class DepartamentoModule {}

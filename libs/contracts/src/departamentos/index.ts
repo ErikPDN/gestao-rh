@@ -16,6 +16,7 @@ export {
   DEPARTAMENTO_SERVICE_NAME,
 } from './grpc/proto/departamento.js';
 export * from './interfaces/departamento-result.interface.js';
+export * from './interfaces/departamento-dashboard-result.interface.js';
 export * from './interfaces/cargo-result.interface.js';
 export * from './dto/create-departamento.dto.js';
 export * from './dto/update-departamento.dto.js';

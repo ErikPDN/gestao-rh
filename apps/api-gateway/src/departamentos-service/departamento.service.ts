@@ -1,13 +1,20 @@
 import {
   CreateDepartamentoDto,
+  DepartamentoDashboardResult,
   DepartamentoResult,
   GetDepartamentosQueryDto,
   UpdateDepartamentoDto,
-} from "@app/contracts";
-import { HttpException, HttpStatus, Inject, Injectable, Logger } from "@nestjs/common";
-import { catchError, firstValueFrom, OperatorFunction } from "rxjs";
-import { HttpService } from "@nestjs/axios";
-import { AxiosError } from "axios";
+} from '@app/contracts';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
+import { catchError, firstValueFrom, OperatorFunction } from 'rxjs';
+import { HttpService } from '@nestjs/axios';
+import { AxiosError } from 'axios';
 
 @Injectable()
 export class DepartamentoService {
@@ -15,15 +22,27 @@ export class DepartamentoService {
 
   constructor(
     @Inject('DEPARTAMENTO_SERVICE_URL') private readonly apiUrl: string,
-    private readonly httpService: HttpService
-  ) { }
+    private readonly httpService: HttpService,
+  ) {}
 
   async createDepartamento(dto: CreateDepartamentoDto) {
     const response = await firstValueFrom(
       this.httpService
         .post<DepartamentoResult>(`${this.apiUrl}/departamentos`, dto)
-        .pipe(this.handleError('Error creating departamento'))
-    )
+        .pipe(this.handleError('Error creating departamento')),
+    );
+
+    return response.data;
+  }
+
+  async getDashboard() {
+    const response = await firstValueFrom(
+      this.httpService
+        .get<DepartamentoDashboardResult>(
+          `${this.apiUrl}/departamentos/dashboard`,
+        )
+        .pipe(this.handleError('Error fetching dashboard')),
+    );
 
     return response.data;
   }
@@ -32,8 +51,8 @@ export class DepartamentoService {
     const response = await firstValueFrom(
       this.httpService
         .get<DepartamentoResult>(`${this.apiUrl}/departamentos/${id}`)
-        .pipe(this.handleError('Error fetching departamento'))
-    )
+        .pipe(this.handleError('Error fetching departamento')),
+    );
 
     return response.data;
   }
@@ -55,8 +74,8 @@ export class DepartamentoService {
             limit: query.limit,
           },
         })
-        .pipe(this.handleError('Error fetching departamentos'))
-    )
+        .pipe(this.handleError('Error fetching departamentos')),
+    );
 
     return response.data;
   }
@@ -65,8 +84,8 @@ export class DepartamentoService {
     const response = await firstValueFrom(
       this.httpService
         .patch<DepartamentoResult>(`${this.apiUrl}/departamentos/${id}`, dto)
-        .pipe(this.handleError('Error updating departamento'))
-    )
+        .pipe(this.handleError('Error updating departamento')),
+    );
 
     return response.data;
   }
@@ -74,9 +93,11 @@ export class DepartamentoService {
   async desativarDepartamento(id: string) {
     const response = await firstValueFrom(
       this.httpService
-        .post<DepartamentoResult>(`${this.apiUrl}/departamentos/${id}/desativar`)
-        .pipe(this.handleError('Error deactivating departamento'))
-    )
+        .post<DepartamentoResult>(
+          `${this.apiUrl}/departamentos/${id}/desativar`,
+        )
+        .pipe(this.handleError('Error deactivating departamento')),
+    );
 
     return response.data;
   }

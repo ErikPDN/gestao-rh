@@ -8,17 +8,25 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Departamento } from '../entities/departamento.entity.js';
 import { Repository } from 'typeorm/repository/Repository.js';
 import { DepartamentoResult } from '@app/contracts/departamentos/interfaces/departamento-result.interface.js';
-import { CreateDepartamentoDto, GetDepartamentosQueryDto, UpdateDepartamentoDto } from '@app/contracts';
+import {
+  CreateDepartamentoDto,
+  DepartamentoDashboardResult,
+  GetDepartamentosQueryDto,
+  UpdateDepartamentoDto,
+} from '@app/contracts';
 import { In } from 'typeorm/find-options/operator/In.js';
 import { FuncionarioClientService } from '../funcionario-client/funcionario-client.service.js';
+import { Cargo } from '../entities/cargo.entity.js';
 
 @Injectable()
 export class DepartamentoService {
   constructor(
     @InjectRepository(Departamento)
     private departamentoRepository: Repository<Departamento>,
-    private readonly funcionarioClient: FuncionarioClientService
-  ) { }
+    @InjectRepository(Cargo)
+    private cargoRepository: Repository<Cargo>,
+    private readonly funcionarioClient: FuncionarioClientService,
+  ) {}
 
   async createDepartamento(
     dto: CreateDepartamentoDto,
@@ -60,10 +68,11 @@ export class DepartamentoService {
     const { departamentoIds, page = 1, limit = 20 } = filtro;
     const isIdLookup = !!departamentoIds?.length;
 
-    const [departamentos, total] = await this.departamentoRepository.findAndCount({
-      where: isIdLookup ? { id: In(departamentoIds) } : {},
-      ...(isIdLookup ? {} : { skip: (page - 1) * limit, take: limit }),
-    });
+    const [departamentos, total] =
+      await this.departamentoRepository.findAndCount({
+        where: isIdLookup ? { id: In(departamentoIds) } : {},
+        ...(isIdLookup ? {} : { skip: (page - 1) * limit, take: limit }),
+      });
 
     return {
       data: departamentos.map((departamento) =>
@@ -72,6 +81,20 @@ export class DepartamentoService {
       total,
       page: isIdLookup ? 1 : page,
       limit: isIdLookup ? total : limit,
+    };
+  }
+
+  async getDashboard(): Promise<DepartamentoDashboardResult> {
+    const [ativos, totalCadastrados, cargosAtivos] = await Promise.all([
+      this.departamentoRepository.count({ where: { ativo: true } }),
+      this.departamentoRepository.count(),
+      this.cargoRepository.count({ where: { ativo: true } }),
+    ]);
+
+    return {
+      ativos,
+      totalCadastrados,
+      cargosAtivos,
     };
   }
 
@@ -86,15 +109,20 @@ export class DepartamentoService {
     if (!departamento)
       throw new NotFoundException(`Departamento com id ${id} não encontrado`);
 
-
     if (dto.gestorId) {
-      const gestorExistente = await this.funcionarioClient.getFuncionario(dto.gestorId);
+      const gestorExistente = await this.funcionarioClient.getFuncionario(
+        dto.gestorId,
+      );
 
       if (!gestorExistente)
-        throw new NotFoundException(`Gestor com ID ${dto.gestorId} não encontrado`);
+        throw new NotFoundException(
+          `Gestor com ID ${dto.gestorId} não encontrado`,
+        );
 
       if (gestorExistente.departamentoId !== id) {
-        throw new BadRequestException(`Gestor com ID ${dto.gestorId} não pertence ao departamento com ID ${id}`);
+        throw new BadRequestException(
+          `Gestor com ID ${dto.gestorId} não pertence ao departamento com ID ${id}`,
+        );
       }
     }
 
