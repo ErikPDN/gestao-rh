@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Funcionario } from './entities/funcionario.entity.js';
-import { In, Repository } from 'typeorm';
+import { ILike, In, IsNull, Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   CreateFuncionarioDto,
@@ -13,6 +13,7 @@ import {
   UpdateFuncionarioDto,
   GetFuncionariosQueryDto,
   FuncionarioDashboardResult,
+  StatusFuncionario,
 } from '@app/contracts';
 import { DepartamentoClientService } from './departamento-client/departamento-client.service.js';
 
@@ -24,13 +25,29 @@ export class FuncionarioService {
     private readonly departamentoClient: DepartamentoClientService,
   ) {}
 
-  async getFuncionarios(query: GetFuncionariosQueryDto) {
-    const { funcionarioIds, page = 1, limit = 20 } = query;
+  async getFuncionarios(dto: GetFuncionariosQueryDto) {
+    const { funcionarioIds, page = 1, limit = 20, query, status } = dto;
     const isIdLookup = !!funcionarioIds?.length;
+
+    const statusWhere =
+      status === StatusFuncionario.ATIVO
+        ? { dataDemissao: IsNull() }
+        : status === StatusFuncionario.DESLIGADO
+          ? { dataDemissao: Not(IsNull()) }
+          : {};
+
+    const where = isIdLookup
+      ? { id: In(funcionarioIds), ...statusWhere }
+      : query
+        ? [
+            { nome: ILike(`%${query}%`), ...statusWhere },
+            { cpfCnpj: ILike(`%${query}%`), ...statusWhere },
+          ]
+        : statusWhere;
 
     const [funcionarios, total] = await this.funcionarioRepository.findAndCount(
       {
-        where: isIdLookup ? { id: In(funcionarioIds) } : {},
+        where,
         ...(isIdLookup ? {} : { skip: (page - 1) * limit, take: limit }),
       },
     );
@@ -48,6 +65,8 @@ export class FuncionarioService {
     const departamentoPorId = new Map(departamentos.map((d) => [d.id, d]));
     const cargoPorId = new Map(cargos.map((c) => [c.id, c]));
 
+    const totalPages = Math.ceil(total / limit);
+
     return {
       data: funcionarios.map((f) =>
         this.toFuncionarioResponse(
@@ -59,6 +78,7 @@ export class FuncionarioService {
       total,
       page: isIdLookup ? 1 : page,
       limit: isIdLookup ? total : limit,
+      totalPages,
     };
   }
 
@@ -106,6 +126,7 @@ export class FuncionarioService {
       .select('funcionario.departamentoId', 'departamentoId')
       .addSelect('COUNT(*)', 'quantidadeFuncionarios')
       .groupBy('funcionario.departamentoId')
+      .limit(7)
       .getRawMany<{ departamentoId: string; quantidadeFuncionarios: number }>();
 
     const adimitidosRecentemente = await this.funcionarioRepository.find({

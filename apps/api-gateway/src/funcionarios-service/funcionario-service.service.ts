@@ -25,7 +25,7 @@ export class FuncionarioService {
     private readonly httpService: HttpService,
   ) {}
 
-  async getFuncionarios(query: GetFuncionariosQueryDto) {
+  async getFuncionarios(dto: GetFuncionariosQueryDto) {
     const response = await firstValueFrom(
       this.httpService
         .get<{
@@ -33,13 +33,16 @@ export class FuncionarioService {
           total: number;
           page: number;
           limit: number;
+          totalPages: number;
         }>(`${this.apiUrl}/funcionarios`, {
           params: {
-            ...(query.funcionarioIds?.length
-              ? { funcionarioIds: query.funcionarioIds.join(',') }
+            ...(dto.funcionarioIds?.length
+              ? { funcionarioIds: dto.funcionarioIds.join(',') }
               : {}),
-            page: query.page,
-            limit: query.limit,
+            page: dto.page,
+            limit: dto.limit,
+            query: dto.query,
+            status: dto.status,
           },
         })
         .pipe(this.handleError('Error fetching funcionarios')),

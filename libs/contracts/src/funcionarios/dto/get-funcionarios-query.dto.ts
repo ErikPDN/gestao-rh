@@ -1,6 +1,18 @@
 import { Transform } from 'class-transformer';
-import { ArrayMaxSize, ArrayNotEmpty, IsArray, IsOptional, IsUUID, IsInt, Min, Max } from 'class-validator';
+import {
+  ArrayMaxSize,
+  ArrayNotEmpty,
+  IsArray,
+  IsOptional,
+  IsUUID,
+  IsInt,
+  Min,
+  Max,
+  IsString,
+  IsEnum,
+} from 'class-validator';
 import { Type } from 'class-transformer';
+import { StatusFuncionario } from '../types/status-funcionario.enum.js';
 
 export class GetFuncionariosQueryDto {
   @IsOptional()
@@ -19,6 +31,16 @@ export class GetFuncionariosQueryDto {
     message: 'Todos os ids de funcionarios ter um id válido',
   })
   funcionarioIds?: string[];
+
+  @IsOptional()
+  @IsString()
+  query?: string;
+
+  @IsOptional()
+  @IsEnum(StatusFuncionario, {
+    message: 'Status inválido. Deve ser ATIVO ou DESLIGADO',
+  })
+  status?: StatusFuncionario;
 
   @IsOptional()
   @Type(() => Number)
