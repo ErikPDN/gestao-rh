@@ -10,9 +10,12 @@ import {
   Max,
   MaxLength,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 
 export class CreateFuncionarioDto {
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.replace(/\D/g, '') : value,
+  )
   @Matches(/^(\d{11}|\d{14})$/, {
     message: 'cpfCnpj deve ter 11 ou 14 dígitos, sem pontuação',
   })
