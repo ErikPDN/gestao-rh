@@ -23,21 +23,40 @@ export interface FuncionarioResponse {
   dataDemissao?: string | undefined;
 }
 
+export interface ContarPorDepartamentoRequest {
+  departamentoIds: string[];
+}
+
+export interface ContagemDepartamento {
+  departamentoId: string;
+  quantidadeFuncionarios: number;
+}
+
+export interface ContarPorDepartamentoResponse {
+  contagens: ContagemDepartamento[];
+}
+
 export const FUNCIONARIO_PACKAGE_NAME = "funcionario";
 
 export interface FuncionarioServiceClient {
   getFuncionario(request: GetFuncionarioRequest): Observable<FuncionarioResponse>;
+
+  contarPorDepartamento(request: ContarPorDepartamentoRequest): Observable<ContarPorDepartamentoResponse>;
 }
 
 export interface FuncionarioServiceController {
   getFuncionario(
     request: GetFuncionarioRequest,
   ): Promise<FuncionarioResponse> | Observable<FuncionarioResponse> | FuncionarioResponse;
+
+  contarPorDepartamento(
+    request: ContarPorDepartamentoRequest,
+  ): Promise<ContarPorDepartamentoResponse> | Observable<ContarPorDepartamentoResponse> | ContarPorDepartamentoResponse;
 }
 
 export function FuncionarioServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["getFuncionario"];
+    const grpcMethods: string[] = ["getFuncionario", "contarPorDepartamento"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("FuncionarioService", method)(constructor.prototype[method], method, descriptor);

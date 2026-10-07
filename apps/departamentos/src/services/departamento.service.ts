@@ -109,9 +109,12 @@ export class DepartamentoService {
         ...(isIdLookup ? {} : { skip: (page - 1) * limit, take: limit }),
       });
 
-    const cargosAtivosMap = await this.contarCargosAtivos(
-      departamentos.map((d) => d.id),
-    );
+    const ids = departamentos.map((d) => d.id);
+
+    const [cargosAtivosMap, funcionariosMap] = await Promise.all([
+      this.contarCargosAtivos(ids),
+      this.contarFuncionarios(ids),
+    ]);
 
     const totalPages = Math.ceil(total / limit);
 
@@ -120,6 +123,7 @@ export class DepartamentoService {
         this.toDepartamentoResult(
           departamento,
           cargosAtivosMap.get(departamento.id) ?? 0,
+          funcionariosMap.get(departamento.id) ?? 0,
         ),
       ),
       total,
@@ -241,9 +245,26 @@ export class DepartamentoService {
     return new Map(rows.map((row) => [row.departamentoId, Number(row.total)]));
   }
 
+  private async contarFuncionarios(
+    ids: string[],
+  ): Promise<Map<string, number>> {
+    if (ids.length === 0) return new Map();
+
+    try {
+      const { contagens } =
+        await this.funcionarioClient.contarPorDepartamento(ids);
+      return new Map(
+        contagens.map((c) => [c.departamentoId, c.quantidadeFuncionarios]),
+      );
+    } catch {
+      return new Map();
+    }
+  }
+
   private toDepartamentoResult(
     departamento: Departamento,
     totalCargos?: number,
+    totalFuncionarios?: number,
   ): DepartamentoResult {
     return {
       id: departamento.id,
@@ -252,6 +273,7 @@ export class DepartamentoService {
       gestorId: departamento.gestorId,
       gestorNome: departamento.gestorNome,
       totalCargos: totalCargos,
+      totalFuncionarios: totalFuncionarios,
       createdAt: departamento.createdAt,
       updatedAt: departamento.updatedAt,
       ativo: departamento.ativo,

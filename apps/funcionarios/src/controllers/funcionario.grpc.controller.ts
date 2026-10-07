@@ -1,5 +1,7 @@
 import { Controller } from '@nestjs/common';
 import {
+  ContarPorDepartamentoRequest,
+  ContarPorDepartamentoResponse,
   FuncionarioResponse,
   FuncionarioServiceController,
   FuncionarioServiceControllerMethods,
@@ -27,6 +29,21 @@ export class FuncionarioGrpcController implements FuncionarioServiceController {
       dataDemissao: funcionario.dataDemissao
         ? new Date(funcionario.dataDemissao).toISOString()
         : undefined,
+    };
+  }
+
+  async contarPorDepartamento(
+    request: ContarPorDepartamentoRequest,
+  ): Promise<ContarPorDepartamentoResponse> {
+    const { departamentoIds } = request;
+    const funcionariosPorDepartamento =
+      await this.funcionarioService.contarPorDepartamento(departamentoIds);
+
+    return {
+      contagens: funcionariosPorDepartamento.map((f) => ({
+        departamentoId: f.departamentoId,
+        quantidadeFuncionarios: f.quantidadeFuncionarios,
+      })),
     };
   }
 }

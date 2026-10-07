@@ -4,6 +4,7 @@ package funcionario;
 
 service FuncionarioService {
     rpc GetFuncionario (GetFuncionarioRequest) returns (FuncionarioResponse);
+    rpc ContarPorDepartamento (ContarPorDepartamentoRequest) returns (ContarPorDepartamentoResponse);
 }
 
 message GetFuncionarioRequest {
@@ -17,4 +18,17 @@ message FuncionarioResponse {
     string departamentoId = 4;
     double salario = 5;
     optional string dataDemissao = 6;
+}
+
+message ContarPorDepartamentoRequest {
+    repeated string departamentoIds = 1;
+}
+
+message ContagemDepartamento {
+    string departamentoId = 1;
+    int32 quantidadeFuncionarios = 2;
+}
+
+message ContarPorDepartamentoResponse {
+    repeated ContagemDepartamento contagens = 1;
 }
