@@ -57,7 +57,7 @@ export class DepartamentoService {
     return response.data;
   }
 
-  async getDepartamentos(query: GetDepartamentosQueryDto) {
+  async getDepartamentos(dto: GetDepartamentosQueryDto) {
     const response = await firstValueFrom(
       this.httpService
         .get<{
@@ -67,11 +67,13 @@ export class DepartamentoService {
           limit: number;
         }>(`${this.apiUrl}/departamentos`, {
           params: {
-            ...(query.departamentoIds?.length
-              ? { departamentoIds: query.departamentoIds.join(',') }
+            ...(dto.departamentoIds?.length
+              ? { departamentoIds: dto.departamentoIds.join(',') }
               : {}),
-            page: query.page,
-            limit: query.limit,
+            query: dto.query,
+            status: dto.status,
+            page: dto.page,
+            limit: dto.limit,
           },
         })
         .pipe(this.handleError('Error fetching departamentos')),

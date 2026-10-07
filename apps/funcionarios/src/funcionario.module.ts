@@ -7,7 +7,7 @@ import { FuncionarioDatabase } from './database/ormconfig.funcionario.js';
 import { DepartamentoClientModule } from './departamento-client/departamento-client.module.js';
 import { Funcionario } from './entities/funcionario.entity.js';
 import { FuncionarioController } from './controllers/funcionario.controller.js';
-import { FuncionarioGrpcController } from './controllers/funcionari.grpc.controller.js';
+import { FuncionarioGrpcController } from './controllers/funcionario.grpc.controller.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 

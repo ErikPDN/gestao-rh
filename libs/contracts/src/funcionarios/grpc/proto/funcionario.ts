@@ -20,6 +20,7 @@ export interface FuncionarioResponse {
   cargoId: string;
   departamentoId: string;
   salario: number;
+  dataDemissao?: string | undefined;
 }
 
 export const FUNCIONARIO_PACKAGE_NAME = "funcionario";

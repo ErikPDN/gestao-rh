@@ -16,4 +16,5 @@ message FuncionarioResponse {
     string cargoId = 3;
     string departamentoId = 4;
     double salario = 5;
+    optional string dataDemissao = 6;
 }

@@ -289,6 +289,8 @@ export class FuncionarioService {
     this.funcionarioRepository.merge(funcionario, { dataDemissao: new Date() });
     const funcionarioSalvo = await this.funcionarioRepository.save(funcionario);
 
+    await this.departamentoClient.removerGestor(funcionarioSalvo.id);
+
     const [departamento, cargo] = await Promise.all([
       this.departamentoClient.getDepartamento(funcionarioSalvo.departamentoId),
       this.departamentoClient.getCargo(
