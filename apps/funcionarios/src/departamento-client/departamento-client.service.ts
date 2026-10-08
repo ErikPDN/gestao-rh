@@ -62,6 +62,20 @@ export class DepartamentoClientService implements OnModuleInit {
     }
   }
 
+  async removerGestor(funcionarioId: string) {
+    try {
+      return await firstValueFrom(
+        this.departamentoService.removerGestor({ funcionarioId }),
+      );
+    } catch (err) {
+      const error = err as ServiceError;
+      throw new HttpException(
+        error.details ?? 'Internal Server Error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   async getCargo(cargoId: string, departamentoId: string) {
     try {
       return await firstValueFrom(

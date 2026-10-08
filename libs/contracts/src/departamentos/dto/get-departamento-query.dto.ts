@@ -3,12 +3,15 @@ import {
   ArrayMaxSize,
   ArrayNotEmpty,
   IsArray,
+  IsEnum,
   IsInt,
   IsOptional,
+  IsString,
   IsUUID,
   Max,
   Min,
 } from 'class-validator';
+import { StatusDepartamento } from '../enums/status-departamento.enum.js';
 
 export class GetDepartamentosQueryDto {
   @IsOptional()
@@ -27,6 +30,16 @@ export class GetDepartamentosQueryDto {
     message: 'Todos os ids devem ser UUIDs válidos',
   })
   departamentoIds?: string[];
+
+  @IsOptional()
+  @IsString({ message: 'A query deve ser uma string' })
+  query?: string;
+
+  @IsOptional()
+  @IsEnum(StatusDepartamento, {
+    message: 'Status inválido. Deve ser ATIVO ou INATIVO',
+  })
+  status?: StatusDepartamento;
 
   @IsOptional()
   @Type(() => Number)

@@ -1,5 +1,6 @@
 export * from './interfaces/funcionario-result.interface.js';
 export * from './interfaces/funcionario-dashboard-result.interface.js';
+export * from './interfaces/funcionario-por-departamento-result.interface.js';
 export * from './types/admissoes-recentes.type.js';
 export * from './types/funcionario-departamento.type.js';
 export * from './types/status-funcionario.enum.js';
@@ -11,6 +12,8 @@ export type {
   FuncionarioResponse,
   FuncionarioServiceClient,
   FuncionarioServiceController,
+  ContarPorDepartamentoRequest,
+  ContarPorDepartamentoResponse,
 } from './grpc/proto/funcionario.js';
 export {
   FUNCIONARIO_PACKAGE_NAME,

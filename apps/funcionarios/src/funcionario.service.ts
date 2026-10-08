@@ -14,6 +14,7 @@ import {
   GetFuncionariosQueryDto,
   FuncionarioDashboardResult,
   StatusFuncionario,
+  FuncionarioPorDepartamentoResult,
 } from '@app/contracts';
 import { DepartamentoClientService } from './departamento-client/departamento-client.service.js';
 
@@ -289,6 +290,8 @@ export class FuncionarioService {
     this.funcionarioRepository.merge(funcionario, { dataDemissao: new Date() });
     const funcionarioSalvo = await this.funcionarioRepository.save(funcionario);
 
+    await this.departamentoClient.removerGestor(funcionarioSalvo.id);
+
     const [departamento, cargo] = await Promise.all([
       this.departamentoClient.getDepartamento(funcionarioSalvo.departamentoId),
       this.departamentoClient.getCargo(
@@ -302,6 +305,28 @@ export class FuncionarioService {
       departamento?.nome ?? '',
       cargo?.nome ?? '',
     );
+  }
+
+  async contarPorDepartamento(
+    departamentoIds: string[],
+  ): Promise<FuncionarioPorDepartamentoResult[]> {
+    if (departamentoIds.length === 0) return [];
+
+    const rows = await this.funcionarioRepository
+      .createQueryBuilder('funcionario')
+      .select('funcionario.departamentoId', 'departamentoId')
+      .addSelect('COUNT(*)', 'quantidadeFuncionarios')
+      .where('funcionario.departamentoId IN (:...departamentoIds)', {
+        departamentoIds,
+      })
+      .andWhere('funcionario.dataDemissao IS NULL')
+      .groupBy('funcionario.departamentoId')
+      .getRawMany<FuncionarioPorDepartamentoResult>();
+
+    return rows.map((row) => ({
+      departamentoId: row.departamentoId,
+      quantidadeFuncionarios: Number(row.quantidadeFuncionarios),
+    }));
   }
 
   private toFuncionarioResponse(

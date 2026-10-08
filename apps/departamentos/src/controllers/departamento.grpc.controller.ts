@@ -10,6 +10,8 @@ import type {
   GetCargoRequest,
   GetDepartamentoRequest,
   ListByIdsRequest,
+  RemoverGestorRequest,
+  RemoverGestorResponse,
 } from '@app/contracts';
 import { CargoService } from '../services/cargo.service.js';
 
@@ -37,9 +39,10 @@ export class DepartamentoGrpcController implements DepartamentoServiceController
     request: ListByIdsRequest,
   ): Promise<DepartamentosResponse> {
     const { ids } = request;
-    const { data: departamentos } = await this.departamentoService.getDepartamentos({
-      departamentoIds: ids,
-    });
+    const { data: departamentos } =
+      await this.departamentoService.getDepartamentos({
+        departamentoIds: ids,
+      });
 
     return {
       departamentos: departamentos.map((departamento) => ({
@@ -47,6 +50,15 @@ export class DepartamentoGrpcController implements DepartamentoServiceController
         nome: departamento.nome,
       })),
     };
+  }
+
+  async removerGestor(
+    request: RemoverGestorRequest,
+  ): Promise<RemoverGestorResponse> {
+    const departamentosAtualizados =
+      await this.departamentoService.removerGestor(request.funcionarioId);
+
+    return { departamentosAtualizados };
   }
 
   async getCargo(request: GetCargoRequest): Promise<CargoResponse> {
