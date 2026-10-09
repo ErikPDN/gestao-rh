@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package auth;
+
+service AuthService {
+    rpc Login (LoginRequest) returns (AuthResponse);
+    rpc Refresh (RefreshRequest) returns (AuthResponse);
+    rpc Logout (LogoutRequest) returns (LogoutResponse);
+    rpc CriarUsuario (CriarUsuarioRequest) returns (UsuarioResponse);
+    rpc GetUsuario (GetUsuarioRequest) returns (UsuarioResponse);
+}
+
+message LoginRequest {
+    string email = 1;
+    string senha = 2;
+}
+
+message RefreshRequest {
+    string refreshToken = 1;
+}
+
+message LogoutRequest {
+    string refreshToken = 1;
+}
+
+message LogoutResponse {
+    bool success = 1;
+}
+
+message AuthResponse {
+    string accessToken = 1;
+    string refreshToken = 2;
+    int32 expiresIn = 3;
+    UsuarioResponse usuario = 4;
+}
+
+message CriarUsuarioRequest {
+    string email = 1;
+    string senha = 2;
+    repeated string roles = 3;
+    string funcionarioId = 4;
+}
+
+message GetUsuarioRequest {
+    string id = 1;
+}
+
+message UsuarioResponse {
+    string id = 1;
+    string email = 2;
+    repeated string roles = 3;
+    string funcionarioId = 4;
+}

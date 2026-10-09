@@ -3,6 +3,7 @@ import { AuthModule } from './auth.module.js';
 import { ValidationPipe } from '@nestjs/common';
 import { Transport } from '@nestjs/microservices';
 import { join } from 'path';
+import { AUTH_PACKAGE_NAME } from '@app/contracts/auth/index.js';
 
 async function bootstrap() {
   const app = await NestFactory.create(AuthModule);
@@ -24,8 +25,7 @@ async function bootstrap() {
     },
   });
 
-  await app.startAllMicroservices();
   await app.listen(process.env.port ?? 3004);
-  console.log(`Auth está rodando em: ${process.env.port ?? 3004}`);
+  console.log(`Auth está rodando em: ${process.env.PORT ?? 3004}`);
 }
 await bootstrap();
