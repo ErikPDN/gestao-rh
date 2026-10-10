@@ -16,16 +16,19 @@ async function bootstrap() {
     }),
   );
 
-  app.connectMicroservice({
-    transport: Transport.GRPC,
-    options: {
-      package: AUTH_PACKAGE_NAME,
-      protoPath: join(process.cwd(), 'proto/auth.proto'),
-      url: process.env.AUTH_GRPC_URL ?? 'localhost:50054',
+  app.connectMicroservice(
+    {
+      transport: Transport.GRPC,
+      options: {
+        package: AUTH_PACKAGE_NAME,
+        protoPath: join(process.cwd(), 'proto/auth.proto'),
+        url: process.env.AUTH_GRPC_URL ?? 'localhost:50054',
+      },
     },
-  });
+    { inheritAppConfig: true },
+  );
 
-  await app.listen(process.env.port ?? 3004);
+  await app.listen(process.env.PORT ?? 3004);
   console.log(`Auth está rodando em: ${process.env.PORT ?? 3004}`);
 }
 await bootstrap();

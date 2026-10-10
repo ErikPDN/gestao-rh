@@ -16,14 +16,17 @@ async function bootstrap() {
     }),
   );
 
-  app.connectMicroservice({
-    transport: Transport.GRPC,
-    options: {
-      package: FUNCIONARIO_PACKAGE_NAME,
-      protoPath: join(process.cwd(), 'proto/funcionario.proto'),
-      url: process.env.FUNCIONARIO_GRPC_URL ?? 'localhost:50052',
+  app.connectMicroservice(
+    {
+      transport: Transport.GRPC,
+      options: {
+        package: FUNCIONARIO_PACKAGE_NAME,
+        protoPath: join(process.cwd(), 'proto/funcionario.proto'),
+        url: process.env.FUNCIONARIO_GRPC_URL ?? 'localhost:50052',
+      },
     },
-  });
+    { inheritAppConfig: true },
+  );
 
   await app.startAllMicroservices();
   await app.listen(process.env.PORT ?? 3002);

@@ -1,2 +1,3 @@
 CREATE DATABASE gestao_rh_funcionario;
 CREATE DATABASE gestao_rh_departamento;
+CREATE DATABASE gestao_rh_auth;

@@ -27,10 +27,13 @@
     "test:e2e": "viapps/gestao-rh/test run --config ./vitest.config.e2e.ts",
     "typeorm:funcionarios": "typeorm-ts-node-esm -d apps/funcionarios/src/database/data-source.ts",
     "typeorm:departamentos": "typeorm-ts-node-esm -d apps/departamentos/src/database/data-source.ts",
+    "typeorm:auth": "typeorm-ts-node-esm -d apps/auth/src/database/data-source.ts",
     "migration:generate:funcionarios": "pnpm typeorm:funcionarios migration:generate",
     "migration:run:funcionarios": "pnpm typeorm:funcionarios migration:run",
     "migration:generate:departamentos": "pnpm typeorm:departamentos migration:generate",
     "migration:run:departamentos": "pnpm typeorm:departamentos migration:run",
+    "migration:generate:auth": "pnpm typeorm:auth migration:generate",
+    "migration:run:auth": "pnpm typeorm:auth migration:run",
     "proto:gen:departamento": "protoc --ts_proto_out=libs/contracts/src/departamentos/grpc --ts_proto_opt=nestJs=true proto/departamento.proto",
     "proto:gen:funcionario": "protoc --ts_proto_out=libs/contracts/src/funcionarios/grpc --ts_proto_opt=nestJs=true proto/funcionario.proto",
     "proto:gen:auth": "protoc --ts_proto_out=libs/contracts/src/auth/grpc --ts_proto_opt=nestJs=true proto/auth.proto"

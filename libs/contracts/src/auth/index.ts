@@ -20,3 +20,4 @@ export * from './dto/refresh-token.dto.js';
 export * from './dto/login.dto.js';
 export * from './dto/create-usuario.dto.js';
 export * from './interfaces/jwt-payload.interface.js';
+export * from './interfaces/refresh-token.interface.js';
