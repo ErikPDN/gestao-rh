@@ -22,12 +22,13 @@ async function bootstrap() {
       options: {
         package: AUTH_PACKAGE_NAME,
         protoPath: join(process.cwd(), 'proto/auth.proto'),
-        url: process.env.AUTH_GRPC_URL ?? 'localhost:50054',
+        url: process.env.AUTH_GRPC_URL ?? 'localhost:50053',
       },
     },
     { inheritAppConfig: true },
   );
 
+  await app.startAllMicroservices();
   await app.listen(process.env.PORT ?? 3004);
   console.log(`Auth está rodando em: ${process.env.PORT ?? 3004}`);
 }

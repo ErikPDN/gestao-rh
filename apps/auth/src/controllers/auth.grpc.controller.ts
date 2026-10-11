@@ -16,7 +16,7 @@ import { GrpcValidationPipe } from '@app/common';
 
 @Controller()
 @AuthServiceControllerMethods()
-@UsePipes(GrpcValidationPipe)
+@UsePipes(new GrpcValidationPipe())
 export class AuthController implements AuthServiceController {
   constructor(private readonly authService: AuthService) {}
 

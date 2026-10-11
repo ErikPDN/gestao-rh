@@ -36,7 +36,8 @@
     "migration:run:auth": "pnpm typeorm:auth migration:run",
     "proto:gen:departamento": "protoc --ts_proto_out=libs/contracts/src/departamentos/grpc --ts_proto_opt=nestJs=true proto/departamento.proto",
     "proto:gen:funcionario": "protoc --ts_proto_out=libs/contracts/src/funcionarios/grpc --ts_proto_opt=nestJs=true proto/funcionario.proto",
-    "proto:gen:auth": "protoc --ts_proto_out=libs/contracts/src/auth/grpc --ts_proto_opt=nestJs=true proto/auth.proto"
+    "proto:gen:auth": "protoc --ts_proto_out=libs/contracts/src/auth/grpc --ts_proto_opt=nestJs=true proto/auth.proto",
+    "seed:auth": "NODE_OPTIONS=\"--loader ts-node/esm --no-warnings\" node apps/auth/src/database/seeds/seed-admin.ts"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.14.4",
@@ -58,6 +59,7 @@
     "class-transform": "^0.7.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
+    "cookie-parser": "^1.4.7",
     "dotenv": "^17.4.2",
     "helmet": "^8.3.0",
     "passport": "^0.7.0",
@@ -73,6 +75,7 @@
     "@nestjs/schematics": "^12.0.0",
     "@nestjs/testing": "^12.0.1",
     "@rspack/core": "^2.2.4",
+    "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.0",
     "@types/node": "^24.0.0",
     "@types/passport-jwt": "^4.0.1",
