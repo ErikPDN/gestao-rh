@@ -3,3 +3,4 @@ export * from './contracts.service.js';
 export * from './funcionarios/index.js';
 export * from './departamentos/index.js';
 export * from './dashboard/index.js';
+export * from './auth/index.js';

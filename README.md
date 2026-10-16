@@ -1,114 +1,157 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Gestão de RH
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Sistema de gestão de recursos humanos construído como **microserviços** com NestJS (projeto da disciplina de Sistemas Distribuídos 2 – UFG). Cobre cadastro de funcionários, departamentos e cargos, além de autenticação e autorização por perfil.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Arquitetura
 
-## Description
+```
+Cliente (frontend :3000)
+        │ HTTP + cookies
+        ▼
+  api-gateway :3001 ── valida JWT (chave pública) e roles
+        │ HTTP / gRPC
+        ├──────────► funcionarios  :3002 (HTTP) / :50052 (gRPC)  ─► gestao_rh_funcionario
+        ├──────────► departamentos :3003 (HTTP) / :50051 (gRPC)  ─► gestao_rh_departamento
+        └──────────► auth          :3004 (HTTP) / :50053 (gRPC)  ─► gestao_rh_auth
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
-
-```bash
-$ pnpm install
+  Entre os serviços: gRPC (funcionarios ⇄ departamentos, auth → funcionarios)
 ```
 
-## Compile and run the project
+| Serviço | Responsabilidade |
+|---|---|
+| `api-gateway` | Ponto de entrada. Rotas REST, cookies de sessão, guards de JWT/roles, dashboard agregado |
+| `auth` | Usuários, login, refresh token, emissão de JWT (RS256), seed do admin |
+| `funcionarios` | CRUD de funcionários, demissão, dashboard |
+| `departamentos` | CRUD de departamentos e cargos, desativação, dashboard |
+
+Cada serviço tem seu **próprio banco** (sem FK entre eles; a consistência é validada via gRPC). Libs compartilhadas: `libs/contracts` (DTOs, enums e código gerado dos `.proto`) e `libs/common` (filtros, pipes e guards). Os contratos gRPC ficam em `proto/`.
+
+**Perfis:** `ADMIN`, `RH`, `GESTOR`, `COLABORADOR`.
+
+## Stack
+
+NestJS 12 · TypeScript · gRPC · PostgreSQL 16 · TypeORM · JWT (RS256) + Argon2 · pnpm · Vitest · rspack
+
+## Pré-requisitos
+
+- Node.js (desenvolvido com a v24) e pnpm
+- Docker e Docker Compose
+- OpenSSL (para gerar as chaves JWT)
+- `protoc` (somente para regenerar os contratos gRPC)
+
+## Como subir o projeto
+
+### 1. Instalar dependências
 
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+pnpm install
 ```
 
-## Run tests
+### 2. Subir o PostgreSQL
 
 ```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+docker compose -f docker/docker-compose.yml up -d
 ```
 
-## Deployment
+Cria os bancos `gestao_rh_funcionario`, `gestao_rh_departamento` e `gestao_rh_auth` (usuário e senha `postgres`).
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### 3. Configurar variáveis de ambiente
 
 ```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+cp .env.example .env
+for app in api-gateway auth departamentos funcionarios; do
+  cp apps/$app/.env.example apps/$app/.env
+done
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Cada serviço carrega `apps/<servico>/.env` e, em seguida, o `.env` da raiz (que define apenas `FRONTEND_URL`, usado pelo CORS e pela validação de origin no gateway).
 
-## Observability
+### 4. Gerar o par de chaves JWT
 
-In production applications, observability is essential for understanding how your system behaves, detecting issues early, and maintaining reliable performance.
+O `auth` assina os tokens com a chave privada e o `api-gateway` valida com a pública:
 
-[NestJS Observe](https://observe.nestjs.com) automatically instruments your NestJS application, giving you deep visibility into your system with minimal setup:
+```bash
+openssl genrsa -out private.pem 2048
+openssl rsa -in private.pem -pubout -out public.pem
 
-- **Distributed tracing:** Follow requests across services and understand how they flow through your system.
-- **Waterfall analysis:** Visualize request execution and identify slow operations, bottlenecks, and unexpected delays.
-- **Performance analysis:** Analyze application performance in real time and quickly pinpoint areas that need optimization.
-- **Metrics:** Track key application and infrastructure metrics to understand system health and performance trends.
-- **Logging:** Centralize and correlate logs with traces and other telemetry to make debugging easier.
-- **Error tracking:** Detect errors quickly and investigate their root causes with the surrounding context.
-- **SLA monitoring:** Track service-level objectives and identify when your application is approaching or exceeding defined thresholds.
-- **Alarms and alerts:** Set up alerts for critical errors, performance degradation, SLA violations, and other anomalies so your team can react quickly.
+base64 -w0 private.pem   # → apps/auth/.env         JWT_PRIVATE_KEY_BASE64
+base64 -w0 public.pem    # → apps/api-gateway/.env  JWT_PUBLIC_KEY_BASE64
+```
 
-## Resources
+> Não versione os arquivos `.pem`.
 
-Check out a few resources that may come in handy when working with NestJS:
+### 5. Rodar as migrations
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Auto-instrument your application with [NestJS Observer](https://observer.nestjs.com). Distributed tracing, metrics, and logging made easy. Error tracking and performance monitoring for your NestJS applications.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```bash
+pnpm migration:run:funcionarios
+pnpm migration:run:departamentos
+pnpm migration:run:auth
+```
 
-## Support
+### 6. Criar o usuário administrador
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Usa `ADMIN_EMAIL` e `ADMIN_PASSWORD` de `apps/auth/.env`:
 
-## Stay in touch
+```bash
+pnpm seed:auth
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### 7. Iniciar os serviços
 
-## License
+Em um terminal para cada serviço:
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```bash
+pnpm nest start funcionarios --watch
+pnpm nest start departamentos --watch
+pnpm nest start auth --watch
+pnpm start:dev                       # api-gateway (projeto padrão do monorepo)
+```
+
+O gateway fica disponível em `http://localhost:3001`.
+
+## Variáveis de ambiente
+
+| Arquivo | Variáveis |
+|---|---|
+| `.env` (raiz) | `FRONTEND_URL` |
+| `apps/api-gateway/.env` | `PORT`, `FUNCIONARIO_SERVICE_URL`, `DEPARTAMENTO_SERVICE_URL`, `AUTH_GRPC_URL`, `REFRESH_TOKEN_TTL`, `JWT_PUBLIC_KEY_BASE64` |
+| `apps/auth/.env` | `PORT`, `DB_*_AUTH`, `FUNCIONARIO_GRPC_URL`, `AUTH_GRPC_URL`, `JWT_PRIVATE_KEY_BASE64`, `JWT_ACCESS_TTL`, `REFRESH_TOKEN_TTL`, `REFRESH_TOKEN_ABSOLUTE_TTL`, `ADMIN_EMAIL`, `ADMIN_PASSWORD` |
+| `apps/funcionarios/.env` | `PORT`, `DB_*_FUNCIONARIO`, `FUNCIONARIO_GRPC_URL`, `DEPARTAMENTO_GRPC_URL` |
+| `apps/departamentos/.env` | `PORT`, `DB_*_DEPARTAMENTO`, `DEPARTAMENTO_GRPC_URL`, `FUNCIONARIO_GRPC_URL` |
+
+`REFRESH_TOKEN_TTL` precisa ter o mesmo valor no gateway (duração do cookie) e no auth (validade do token).
+
+## Principais rotas (via gateway)
+
+| Prefixo | Descrição |
+|---|---|
+| `POST /auth/login`, `/auth/refresh`, `/auth/logout`, `GET /auth/me` | Sessão (refresh token em cookie httpOnly) |
+| `POST /auth/criar-usuario` | Cria usuário (somente `ADMIN`) |
+| `/funcionarios` | CRUD, `GET /dashboard`, `POST /:id/demitir` |
+| `/departamentos` | CRUD, `GET /dashboard`, `POST /:id/desativar` |
+| `/departamentos/:id/cargos` | CRUD de cargos, `POST /:cargoId/desativar` |
+| `GET /dashboard` | Visão geral agregada |
+
+## Portas
+
+| Serviço | HTTP | gRPC |
+|---|---|---|
+| api-gateway | 3001 | – |
+| funcionarios | 3002 | 50052 |
+| departamentos | 3003 | 50051 |
+| auth | 3004 | 50053 |
+| PostgreSQL | 5432 | – |
+
+## Comandos úteis
+
+```bash
+pnpm test                                    # testes unitários
+pnpm test:cov                                # cobertura
+pnpm build                                   # build do gateway
+pnpm migration:generate:<servico> <caminho>  # gerar migration (funcionarios | departamentos | auth)
+pnpm proto:gen:funcionario                   # regenerar contratos gRPC (idem :departamento e :auth)
+```
+
+## Documentação
+
+Requisitos e decisões de domínio: [docs/rh-requisitos.md](docs/rh-requisitos.md).

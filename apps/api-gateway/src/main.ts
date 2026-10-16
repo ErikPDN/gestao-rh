@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module.js';
 import { ValidationPipe } from '@nestjs/common';
+import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -10,13 +11,15 @@ async function bootstrap() {
       whitelist: true,
       transform: true,
       forbidNonWhitelisted: true,
-    })
-  )
+    }),
+  );
+
+  app.use(cookieParser());
 
   app.enableCors({
     origin: process.env.FRONTEND_URL,
     credentials: true,
-  })
+  });
 
   await app.listen(process.env.PORT ?? 3001);
   console.log(`API Gateway is running on: ${process.env.PORT ?? 3001}`);
