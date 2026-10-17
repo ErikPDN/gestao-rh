@@ -1,5 +1,5 @@
 export type AdmissoesRecentes = {
-  id: string;
+  funcionarioId: string;
   funcionarioNome: string;
   departamentoNome: string;
   cargoNome: string;

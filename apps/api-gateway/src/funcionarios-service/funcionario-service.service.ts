@@ -1,115 +1,119 @@
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import { firstValueFrom } from 'rxjs';
 import {
-  Inject,
-  Injectable,
-  Logger,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-import { firstValueFrom, catchError, OperatorFunction } from 'rxjs';
-import { AxiosError } from 'axios';
-import {
-  FuncionarioResponse,
   CreateFuncionarioDto,
   UpdateFuncionarioDto,
   GetFuncionariosQueryDto,
   FuncionarioDashboardResult,
+  FuncionarioResponse,
+  FuncionarioResult,
+  FuncionarioServiceClient,
+  FUNCIONARIO_PACKAGE_NAME,
+  FUNCIONARIO_SERVICE_NAME,
+  toProtoStatus,
 } from '@app/contracts';
+import { type ClientGrpc } from '@nestjs/microservices';
 
 @Injectable()
-export class FuncionarioService {
-  private readonly logger = new Logger(FuncionarioService.name);
+export class FuncionarioService implements OnModuleInit {
+  private funcionarioService: FuncionarioServiceClient;
 
   constructor(
-    @Inject('FUNCIONARIO_SERVICE_URL') private readonly apiUrl: string,
-    private readonly httpService: HttpService,
+    @Inject(FUNCIONARIO_PACKAGE_NAME) private readonly client: ClientGrpc,
   ) {}
+
+  onModuleInit() {
+    this.funcionarioService = this.client.getService<FuncionarioServiceClient>(
+      FUNCIONARIO_SERVICE_NAME,
+    );
+  }
 
   async getFuncionarios(dto: GetFuncionariosQueryDto) {
     const response = await firstValueFrom(
-      this.httpService
-        .get<{
-          data: FuncionarioResponse[];
-          total: number;
-          page: number;
-          limit: number;
-          totalPages: number;
-        }>(`${this.apiUrl}/funcionarios`, {
-          params: {
-            ...(dto.funcionarioIds?.length
-              ? { funcionarioIds: dto.funcionarioIds.join(',') }
-              : {}),
-            page: dto.page,
-            limit: dto.limit,
-            query: dto.query,
-            status: dto.status,
-          },
-        })
-        .pipe(this.handleError('Error fetching funcionarios')),
+      this.funcionarioService.getFuncionarios({
+        funcionarioIds: dto.funcionarioIds ?? [],
+        page: dto.page,
+        limit: dto.limit,
+        query: dto.query,
+        status: toProtoStatus(dto.status),
+      }),
     );
 
-    return response.data;
+    return {
+      ...response,
+      data: response.data.map((f) => this.toFuncionarioResult(f)),
+    };
   }
 
   async createFuncionario(dto: CreateFuncionarioDto) {
     const response = await firstValueFrom(
-      this.httpService
-        .post<FuncionarioResponse>(`${this.apiUrl}/funcionarios`, dto)
-        .pipe(this.handleError('Error creating funcionario')),
+      this.funcionarioService.createFuncionario({
+        nome: dto.nome,
+        cpfCnpj: dto.cpfCnpj,
+        departamentoId: dto.departamentoId,
+        cargoId: dto.cargoId,
+        salario: dto.salario,
+        dataNascimento: new Date(dto.dataNascimento).toISOString(),
+        dataAdmissao: new Date(dto.dataAdmissao || new Date()).toISOString(),
+      }),
     );
 
-    return response.data;
+    return this.toFuncionarioResult(response);
   }
 
-  async getDashboard() {
+  async getDashboard(): Promise<FuncionarioDashboardResult> {
     const response = await firstValueFrom(
-      this.httpService
-        .get<FuncionarioDashboardResult>(
-          `${this.apiUrl}/funcionarios/dashboard`,
-        )
-        .pipe(this.handleError('Error fetching dashboard')),
+      this.funcionarioService.getDashboard({}),
     );
 
-    return response.data;
+    return {
+      ...response,
+      admissoesRecentes: response.admissoesRecentes.map((a) => ({
+        ...a,
+        dataAdmissao: new Date(a.dataAdmissao),
+      })),
+    };
   }
 
   async getFuncionario(id: string) {
     const response = await firstValueFrom(
-      this.httpService
-        .get<FuncionarioResponse>(`${this.apiUrl}/funcionarios/${id}`)
-        .pipe(this.handleError('Error fetching funcionario')),
+      this.funcionarioService.getFuncionario({ id }),
     );
 
-    return response.data;
+    return this.toFuncionarioResult(response);
   }
 
   async updateFuncionario(id: string, dto: UpdateFuncionarioDto) {
     const response = await firstValueFrom(
-      this.httpService
-        .patch<FuncionarioResponse>(`${this.apiUrl}/funcionarios/${id}`, dto)
-        .pipe(this.handleError('Error updating funcionario')),
+      this.funcionarioService.updateFuncionario({
+        id,
+        nome: dto.nome,
+        departamentoId: dto.departamentoId,
+        cargoId: dto.cargoId,
+        salario: dto.salario,
+        dataNascimento: dto.dataNascimento
+          ? new Date(dto.dataNascimento).toISOString()
+          : undefined,
+      }),
     );
 
-    return response.data;
+    return this.toFuncionarioResult(response);
   }
 
   async demitirFuncionario(id: string) {
     const response = await firstValueFrom(
-      this.httpService
-        .post<FuncionarioResponse>(`${this.apiUrl}/funcionarios/${id}/demitir`)
-        .pipe(this.handleError('Error demitindo funcionario')),
+      this.funcionarioService.demitirFuncionario({ id }),
     );
 
-    return response.data;
+    return this.toFuncionarioResult(response);
   }
 
-  private handleError<T>(context: string): OperatorFunction<T, T> {
-    return catchError((error: AxiosError<any>) => {
-      this.logger.error(`${context}: ${error.message}`, error.stack);
-      throw new HttpException(
-        error.response?.data ?? 'Internal Server Error',
-        error.response?.status ?? HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    });
+  private toFuncionarioResult(f: FuncionarioResponse): FuncionarioResult {
+    return {
+      ...f,
+      dataNascimento: new Date(f.dataNascimento),
+      dataAdmissao: new Date(f.dataAdmissao),
+      dataDemissao: f.dataDemissao ? new Date(f.dataDemissao) : undefined,
+    };
   }
 }

@@ -164,7 +164,7 @@ export class FuncionarioService {
         quantidadeFuncionarios: Number(row.quantidadeFuncionarios),
       })),
       admissoesRecentes: adimitidosRecentemente.map((f) => ({
-        id: f.id,
+        funcionarioId: f.id,
         funcionarioNome: f.nome,
         departamentoNome: departamentoPorId.get(f.departamentoId)?.nome ?? '',
         cargoNome: cargoPorId.get(f.cargoId)?.nome ?? '',

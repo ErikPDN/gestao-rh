@@ -10,8 +10,18 @@ import { Observable } from "rxjs";
 
 export const protobufPackage = "funcionario";
 
+export enum StatusFuncionario {
+  STATUS_FUNCIONARIO_UNSPECIFIED = 0,
+  STATUS_FUNCIONARIO_ATIVO = 1,
+  STATUS_FUNCIONARIO_DESLIGADO = 2,
+  UNRECOGNIZED = -1,
+}
+
 export interface GetFuncionarioRequest {
   id: string;
+}
+
+export interface GetDashboardRequest {
 }
 
 export interface FuncionarioResponse {
@@ -21,6 +31,11 @@ export interface FuncionarioResponse {
   departamentoId: string;
   salario: number;
   dataDemissao?: string | undefined;
+  dataAdmissao: string;
+  dataNascimento: string;
+  cpfCnpj: string;
+  cargo: string;
+  departamento: string;
 }
 
 export interface ContarPorDepartamentoRequest {
@@ -36,12 +51,79 @@ export interface ContarPorDepartamentoResponse {
   contagens: ContagemDepartamento[];
 }
 
+export interface GetFuncionariosRequest {
+  funcionarioIds: string[];
+  page?: number | undefined;
+  limit?: number | undefined;
+  query?: string | undefined;
+  status?: StatusFuncionario | undefined;
+}
+
+export interface FuncionariosResponse {
+  data: FuncionarioResponse[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface CreateFuncionarioRequest {
+  cpfCnpj: string;
+  nome: string;
+  departamentoId: string;
+  cargoId: string;
+  salario: number;
+  dataNascimento: string;
+  dataAdmissao?: string | undefined;
+}
+
+export interface UpdateFuncionarioRequest {
+  id: string;
+  nome?: string | undefined;
+  departamentoId?: string | undefined;
+  cargoId?: string | undefined;
+  salario?: number | undefined;
+  dataNascimento?: string | undefined;
+}
+
+export interface FuncionarioDepartamento {
+  departamentoId: string;
+  departamentoNome: string;
+  quantidadeFuncionarios: number;
+}
+
+export interface AdmissoesRecentes {
+  funcionarioId: string;
+  funcionarioNome: string;
+  departamentoNome: string;
+  cargoNome: string;
+  dataAdmissao: string;
+}
+
+export interface FuncionarioDashboardResult {
+  ativos: number;
+  desligados: number;
+  folhaSalarialMensal: number;
+  funcionariosPorDepartamento: FuncionarioDepartamento[];
+  admissoesRecentes: AdmissoesRecentes[];
+}
+
 export const FUNCIONARIO_PACKAGE_NAME = "funcionario";
 
 export interface FuncionarioServiceClient {
   getFuncionario(request: GetFuncionarioRequest): Observable<FuncionarioResponse>;
 
+  getFuncionarios(request: GetFuncionariosRequest): Observable<FuncionariosResponse>;
+
   contarPorDepartamento(request: ContarPorDepartamentoRequest): Observable<ContarPorDepartamentoResponse>;
+
+  createFuncionario(request: CreateFuncionarioRequest): Observable<FuncionarioResponse>;
+
+  updateFuncionario(request: UpdateFuncionarioRequest): Observable<FuncionarioResponse>;
+
+  demitirFuncionario(request: GetFuncionarioRequest): Observable<FuncionarioResponse>;
+
+  getDashboard(request: GetDashboardRequest): Observable<FuncionarioDashboardResult>;
 }
 
 export interface FuncionarioServiceController {
@@ -49,14 +131,42 @@ export interface FuncionarioServiceController {
     request: GetFuncionarioRequest,
   ): Promise<FuncionarioResponse> | Observable<FuncionarioResponse> | FuncionarioResponse;
 
+  getFuncionarios(
+    request: GetFuncionariosRequest,
+  ): Promise<FuncionariosResponse> | Observable<FuncionariosResponse> | FuncionariosResponse;
+
   contarPorDepartamento(
     request: ContarPorDepartamentoRequest,
   ): Promise<ContarPorDepartamentoResponse> | Observable<ContarPorDepartamentoResponse> | ContarPorDepartamentoResponse;
+
+  createFuncionario(
+    request: CreateFuncionarioRequest,
+  ): Promise<FuncionarioResponse> | Observable<FuncionarioResponse> | FuncionarioResponse;
+
+  updateFuncionario(
+    request: UpdateFuncionarioRequest,
+  ): Promise<FuncionarioResponse> | Observable<FuncionarioResponse> | FuncionarioResponse;
+
+  demitirFuncionario(
+    request: GetFuncionarioRequest,
+  ): Promise<FuncionarioResponse> | Observable<FuncionarioResponse> | FuncionarioResponse;
+
+  getDashboard(
+    request: GetDashboardRequest,
+  ): Promise<FuncionarioDashboardResult> | Observable<FuncionarioDashboardResult> | FuncionarioDashboardResult;
 }
 
 export function FuncionarioServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["getFuncionario", "contarPorDepartamento"];
+    const grpcMethods: string[] = [
+      "getFuncionario",
+      "getFuncionarios",
+      "contarPorDepartamento",
+      "createFuncionario",
+      "updateFuncionario",
+      "demitirFuncionario",
+      "getDashboard",
+    ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("FuncionarioService", method)(constructor.prototype[method], method, descriptor);

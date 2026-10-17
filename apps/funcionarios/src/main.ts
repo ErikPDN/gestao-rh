@@ -3,6 +3,7 @@ import { FuncionarioModule } from './funcionario.module.js';
 import { ValidationPipe } from '@nestjs/common';
 import { Transport } from '@nestjs/microservices';
 import { FUNCIONARIO_PACKAGE_NAME } from '@app/contracts/funcionarios/index.js';
+import { HttpToRpcExceptionFilter } from '@app/common';
 import { join } from 'path';
 
 async function bootstrap() {
@@ -15,6 +16,8 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  app.useGlobalFilters(new HttpToRpcExceptionFilter());
 
   app.connectMicroservice(
     {
