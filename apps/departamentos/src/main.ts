@@ -4,9 +4,22 @@ import { ValidationPipe } from '@nestjs/common';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { DEPARTAMENTO_PACKAGE_NAME } from '@app/contracts';
 import { join } from 'path';
+import { HttpToRpcExceptionFilter } from '@app/common';
 
 async function bootstrap() {
-  const app = await NestFactory.create(DepartamentoModule);
+  const url = process.env.DEPARTAMENTO_GRPC_URL ?? 'localhost:50051';
+
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+    DepartamentoModule,
+    {
+      transport: Transport.GRPC,
+      options: {
+        package: DEPARTAMENTO_PACKAGE_NAME,
+        protoPath: join(process.cwd(), 'proto/departamento.proto'),
+        url,
+      },
+    },
+  );
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -16,20 +29,9 @@ async function bootstrap() {
     }),
   );
 
-  app.connectMicroservice<MicroserviceOptions>(
-    {
-      transport: Transport.GRPC,
-      options: {
-        package: DEPARTAMENTO_PACKAGE_NAME,
-        protoPath: join(process.cwd(), 'proto/departamento.proto'),
-        url: process.env.DEPARTAMENTO_GRPC_URL ?? 'localhost:50051',
-      },
-    },
-    { inheritAppConfig: true },
-  );
+  app.useGlobalFilters(new HttpToRpcExceptionFilter());
 
-  await app.startAllMicroservices();
-  await app.listen(process.env.PORT ?? 3003);
-  console.log(`Departamento está rodando em: ${process.env.PORT ?? 3003}`);
+  await app.listen();
+  console.log(`Departamento (gRPC) está rodando em: ${url}`);
 }
 await bootstrap();

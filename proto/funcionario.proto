@@ -4,12 +4,19 @@ package funcionario;
 
 service FuncionarioService {
     rpc GetFuncionario (GetFuncionarioRequest) returns (FuncionarioResponse);
+    rpc GetFuncionarios (GetFuncionariosRequest) returns (FuncionariosResponse);
     rpc ContarPorDepartamento (ContarPorDepartamentoRequest) returns (ContarPorDepartamentoResponse);
+    rpc CreateFuncionario (CreateFuncionarioRequest) returns (FuncionarioResponse);
+    rpc UpdateFuncionario (UpdateFuncionarioRequest) returns (FuncionarioResponse);
+    rpc DemitirFuncionario (GetFuncionarioRequest) returns (FuncionarioResponse);
+    rpc GetDashboard (GetDashboardRequest) returns (FuncionarioDashboardResult);
 }
 
 message GetFuncionarioRequest {
     string id = 1;
 }
+
+message GetDashboardRequest {}
 
 message FuncionarioResponse {
     string id = 1;
@@ -18,6 +25,11 @@ message FuncionarioResponse {
     string departamentoId = 4;
     double salario = 5;
     optional string dataDemissao = 6;
+    string dataAdmissao = 7;
+    string dataNascimento = 8;
+    string cpfCnpj = 9;
+    string cargo = 10;
+    string departamento = 11;
 }
 
 message ContarPorDepartamentoRequest {
@@ -29,6 +41,69 @@ message ContagemDepartamento {
     int32 quantidadeFuncionarios = 2;
 }
 
+enum StatusFuncionario {
+    STATUS_FUNCIONARIO_UNSPECIFIED = 0;
+    STATUS_FUNCIONARIO_ATIVO = 1;
+    STATUS_FUNCIONARIO_DESLIGADO = 2;
+}
+
 message ContarPorDepartamentoResponse {
     repeated ContagemDepartamento contagens = 1;
+}
+
+message GetFuncionariosRequest {
+    repeated string funcionarioIds = 1;
+    optional int32 page = 2;
+    optional int32 limit = 3;
+    optional string query = 4;
+    optional StatusFuncionario status = 5;
+}
+
+message FuncionariosResponse {
+    repeated FuncionarioResponse data = 1;
+    int32 total = 2;
+    int32 page = 3;
+    int32 limit = 4;
+    int32 totalPages = 5;
+}
+
+message CreateFuncionarioRequest {
+    string cpfCnpj = 1;
+    string nome = 2;
+    string departamentoId = 3;
+    string cargoId = 4;
+    double salario = 5;
+    string dataNascimento = 6;
+    optional string dataAdmissao = 7;
+}
+
+message UpdateFuncionarioRequest {
+    string id = 1;
+    optional string nome = 2;
+    optional string departamentoId = 3;
+    optional string cargoId = 4;
+    optional double salario = 5;
+    optional string dataNascimento = 6;
+}
+
+message FuncionarioDepartamento {
+    string departamentoId = 1;
+    string departamentoNome = 2;
+    int32 quantidadeFuncionarios = 3;
+}
+
+message AdmissoesRecentes {
+    string funcionarioId = 1;
+    string funcionarioNome = 2;
+    string departamentoNome = 3;
+    string cargoNome = 4;
+    string dataAdmissao = 5;
+}
+
+message FuncionarioDashboardResult {
+    int32 ativos = 1;
+    int32 desligados = 2;
+    double folhaSalarialMensal = 3;
+    repeated FuncionarioDepartamento funcionariosPorDepartamento = 4;
+    repeated AdmissoesRecentes admissoesRecentes = 5;
 }

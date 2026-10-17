@@ -10,21 +10,102 @@ import { Observable } from "rxjs";
 
 export const protobufPackage = "departamento";
 
+export enum StatusDepartamento {
+  STATUS_DEPARTAMENTO_UNSPECIFIED = 0,
+  STATUS_DEPARTAMENTO_ATIVO = 1,
+  STATUS_DEPARTAMENTO_INATIVO = 2,
+  UNRECOGNIZED = -1,
+}
+
+export enum NivelCargo {
+  NIVEL_CARGO_UNSPECIFIED = 0,
+  NIVEL_CARGO_TRAINEE = 1,
+  NIVEL_CARGO_JUNIOR = 2,
+  NIVEL_CARGO_PLENO = 3,
+  NIVEL_CARGO_SENIOR = 4,
+  NIVEL_CARGO_ESPECIALISTA = 5,
+  UNRECOGNIZED = -1,
+}
+
 export interface GetDepartamentoRequest {
   id: string;
 }
 
-export interface ListByIdsRequest {
+export interface GetDepartamentosRequest {
+  departamentoIds: string[];
+  query?: string | undefined;
+  status?: StatusDepartamento | undefined;
+  page?: number | undefined;
+  limit?: number | undefined;
+}
+
+export interface GetCargosRequest {
   ids: string[];
+  departamentoId?: string | undefined;
+}
+
+export interface GetDashboardRequest {
+}
+
+export interface UpdateDepartamentoRequest {
+  id: string;
+  nome?: string | undefined;
+  descricao?: string | undefined;
+  gestorId?: string | undefined;
+  ativo?: boolean | undefined;
+}
+
+export interface DepartamentoDashboardResult {
+  ativos: number;
+  totalCadastrados: number;
+  cargosAtivos: number;
+}
+
+export interface CreateDepartamentoRequest {
+  nome: string;
+  descricao?: string | undefined;
+  gestorId?: string | undefined;
+  ativo?: boolean | undefined;
+}
+
+export interface CreateCargoRequest {
+  departamentoId: string;
+  nome: string;
+  salarioBase: number;
+  salarioTeto: number;
+  nivel?: NivelCargo | undefined;
+  ativo?: boolean | undefined;
 }
 
 export interface DepartamentoResponse {
   id: string;
   nome: string;
+  descricao?: string | undefined;
+  gestorId?: string | undefined;
+  gestorNome?: string | undefined;
+  totalCargos?: number | undefined;
+  totalFuncionarios?: number | undefined;
+  createdAt: string;
+  updatedAt: string;
+  ativo: boolean;
+}
+
+export interface UpdateCargoRequest {
+  departamentoId: string;
+  cargoId: string;
+  nome?: string | undefined;
+  salarioBase?: number | undefined;
+  salarioTeto?: number | undefined;
+  nivel?: NivelCargo | undefined;
+  ativo?: boolean | undefined;
 }
 
 export interface DepartamentosResponse {
   departamentos: DepartamentoResponse[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
 }
 
 export interface GetCargoRequest {
@@ -38,6 +119,10 @@ export interface CargoResponse {
   departamentoId: string;
   salarioBase: number;
   salarioTeto: number;
+  nivel?: NivelCargo | undefined;
+  createdAt: string;
+  updatedAt: string;
+  ativo: boolean;
 }
 
 export interface CargosResponse {
@@ -55,38 +140,87 @@ export interface RemoverGestorResponse {
 export const DEPARTAMENTO_PACKAGE_NAME = "departamento";
 
 export interface DepartamentoServiceClient {
+  createDepartamento(request: CreateDepartamentoRequest): Observable<DepartamentoResponse>;
+
   getDepartamento(request: GetDepartamentoRequest): Observable<DepartamentoResponse>;
 
-  getDepartamentos(request: ListByIdsRequest): Observable<DepartamentosResponse>;
+  getDepartamentos(request: GetDepartamentosRequest): Observable<DepartamentosResponse>;
+
+  getDashboard(request: GetDashboardRequest): Observable<DepartamentoDashboardResult>;
+
+  updateDepartamento(request: UpdateDepartamentoRequest): Observable<DepartamentoResponse>;
+
+  removerGestor(request: RemoverGestorRequest): Observable<RemoverGestorResponse>;
+
+  desativarDepartamento(request: GetDepartamentoRequest): Observable<DepartamentoResponse>;
+
+  createCargo(request: CreateCargoRequest): Observable<CargoResponse>;
 
   getCargo(request: GetCargoRequest): Observable<CargoResponse>;
 
-  getCargos(request: ListByIdsRequest): Observable<CargosResponse>;
+  getCargos(request: GetCargosRequest): Observable<CargosResponse>;
 
-  removerGestor(request: RemoverGestorRequest): Observable<RemoverGestorResponse>;
+  updateCargo(request: UpdateCargoRequest): Observable<CargoResponse>;
+
+  desativarCargo(request: GetCargoRequest): Observable<CargoResponse>;
 }
 
 export interface DepartamentoServiceController {
+  createDepartamento(
+    request: CreateDepartamentoRequest,
+  ): Promise<DepartamentoResponse> | Observable<DepartamentoResponse> | DepartamentoResponse;
+
   getDepartamento(
     request: GetDepartamentoRequest,
   ): Promise<DepartamentoResponse> | Observable<DepartamentoResponse> | DepartamentoResponse;
 
   getDepartamentos(
-    request: ListByIdsRequest,
+    request: GetDepartamentosRequest,
   ): Promise<DepartamentosResponse> | Observable<DepartamentosResponse> | DepartamentosResponse;
 
-  getCargo(request: GetCargoRequest): Promise<CargoResponse> | Observable<CargoResponse> | CargoResponse;
+  getDashboard(
+    request: GetDashboardRequest,
+  ): Promise<DepartamentoDashboardResult> | Observable<DepartamentoDashboardResult> | DepartamentoDashboardResult;
 
-  getCargos(request: ListByIdsRequest): Promise<CargosResponse> | Observable<CargosResponse> | CargosResponse;
+  updateDepartamento(
+    request: UpdateDepartamentoRequest,
+  ): Promise<DepartamentoResponse> | Observable<DepartamentoResponse> | DepartamentoResponse;
 
   removerGestor(
     request: RemoverGestorRequest,
   ): Promise<RemoverGestorResponse> | Observable<RemoverGestorResponse> | RemoverGestorResponse;
+
+  desativarDepartamento(
+    request: GetDepartamentoRequest,
+  ): Promise<DepartamentoResponse> | Observable<DepartamentoResponse> | DepartamentoResponse;
+
+  createCargo(request: CreateCargoRequest): Promise<CargoResponse> | Observable<CargoResponse> | CargoResponse;
+
+  getCargo(request: GetCargoRequest): Promise<CargoResponse> | Observable<CargoResponse> | CargoResponse;
+
+  getCargos(request: GetCargosRequest): Promise<CargosResponse> | Observable<CargosResponse> | CargosResponse;
+
+  updateCargo(request: UpdateCargoRequest): Promise<CargoResponse> | Observable<CargoResponse> | CargoResponse;
+
+  desativarCargo(request: GetCargoRequest): Promise<CargoResponse> | Observable<CargoResponse> | CargoResponse;
 }
 
 export function DepartamentoServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["getDepartamento", "getDepartamentos", "getCargo", "getCargos", "removerGestor"];
+    const grpcMethods: string[] = [
+      "createDepartamento",
+      "getDepartamento",
+      "getDepartamentos",
+      "getDashboard",
+      "updateDepartamento",
+      "removerGestor",
+      "desativarDepartamento",
+      "createCargo",
+      "getCargo",
+      "getCargos",
+      "updateCargo",
+      "desativarCargo",
+    ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("DepartamentoService", method)(constructor.prototype[method], method, descriptor);

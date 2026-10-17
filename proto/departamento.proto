@@ -3,27 +3,113 @@ syntax = "proto3";
 package departamento;
 
 service DepartamentoService {
+    rpc CreateDepartamento (CreateDepartamentoRequest) returns (DepartamentoResponse);
     rpc GetDepartamento (GetDepartamentoRequest) returns (DepartamentoResponse);
-    rpc GetDepartamentos (ListByIdsRequest) returns (DepartamentosResponse);
-    rpc GetCargo (GetCargoRequest) returns (CargoResponse);
-    rpc GetCargos (ListByIdsRequest) returns (CargosResponse);
+    rpc GetDepartamentos (GetDepartamentosRequest) returns (DepartamentosResponse);
+    rpc GetDashboard (GetDashboardRequest) returns (DepartamentoDashboardResult);
+    rpc UpdateDepartamento (UpdateDepartamentoRequest) returns (DepartamentoResponse);
     rpc RemoverGestor (RemoverGestorRequest) returns (RemoverGestorResponse);
+    rpc DesativarDepartamento (GetDepartamentoRequest) returns (DepartamentoResponse);
+    
+    rpc CreateCargo (CreateCargoRequest) returns (CargoResponse);
+    rpc GetCargo (GetCargoRequest) returns (CargoResponse);
+    rpc GetCargos (GetCargosRequest) returns (CargosResponse);
+    rpc UpdateCargo (UpdateCargoRequest) returns (CargoResponse);
+    rpc DesativarCargo (GetCargoRequest) returns (CargoResponse);
 }
 
 
 message GetDepartamentoRequest { string id = 1; }
 
-message ListByIdsRequest {
+message GetDepartamentosRequest {
+    repeated string departamentoIds = 1;
+    optional string query = 2;
+    optional StatusDepartamento status = 3;
+    optional int32 page = 4;
+    optional int32 limit = 5;
+}
+
+message GetCargosRequest {
     repeated string ids = 1;
+    optional string departamentoId = 2;
+}
+
+message GetDashboardRequest {}
+
+message UpdateDepartamentoRequest {
+    string id = 1;
+    optional string nome = 2;
+    optional string descricao = 3;
+    optional string gestorId = 4;
+    optional bool ativo = 5;
+}
+
+message DepartamentoDashboardResult {
+    int32 ativos = 1;
+    int32 totalCadastrados = 2;
+    int32 cargosAtivos = 3;
+}
+
+message CreateDepartamentoRequest {
+    string nome = 1;
+    optional string descricao = 2;
+    optional string gestorId = 3;
+    optional bool ativo = 4;
+}
+
+enum StatusDepartamento {
+    STATUS_DEPARTAMENTO_UNSPECIFIED = 0;
+    STATUS_DEPARTAMENTO_ATIVO = 1;
+    STATUS_DEPARTAMENTO_INATIVO = 2;
+}
+
+enum NivelCargo {
+    NIVEL_CARGO_UNSPECIFIED = 0;
+    NIVEL_CARGO_TRAINEE = 1;
+    NIVEL_CARGO_JUNIOR = 2;
+    NIVEL_CARGO_PLENO = 3;
+    NIVEL_CARGO_SENIOR = 4;
+    NIVEL_CARGO_ESPECIALISTA = 5;
+}
+
+message CreateCargoRequest {
+    string departamentoId = 1;
+    string nome = 2;
+    double salarioBase = 3;
+    double salarioTeto = 4;
+    optional NivelCargo nivel = 5;
+    optional bool ativo = 6;
 }
 
 message DepartamentoResponse { 
     string id = 1;
     string nome = 2;
+    optional string descricao = 3;
+    optional string gestorId = 4;
+    optional string gestorNome = 5;
+    optional int32 totalCargos = 6;
+    optional int32 totalFuncionarios = 7;
+    string createdAt = 8;
+    string updatedAt = 9;
+    bool ativo = 10;
+}
+
+message UpdateCargoRequest {
+    string departamentoId = 1;
+    string cargoId = 2;
+    optional string nome = 3;
+    optional double salarioBase = 4;
+    optional double salarioTeto = 5;
+    optional NivelCargo nivel = 6;
+    optional bool ativo = 7;
 }
 
 message DepartamentosResponse {
     repeated DepartamentoResponse departamentos = 1;
+    int32 total = 2;
+    int32 page = 3;
+    int32 limit = 4;
+    int32 totalPages = 5;
 }
 
 message GetCargoRequest {
@@ -37,6 +123,10 @@ message CargoResponse {
     string departamentoId = 3;
     double salarioBase = 4;
     double salarioTeto = 5;
+    optional NivelCargo nivel = 6;
+    string createdAt = 7;
+    string updatedAt = 8;
+    bool ativo = 9;
 }
 
 message CargosResponse {

@@ -15,6 +15,7 @@ import {
   FuncionarioDashboardResult,
   StatusFuncionario,
   FuncionarioPorDepartamentoResult,
+  FuncionarioPaginatedResult,
 } from '@app/contracts';
 import { DepartamentoClientService } from './departamento-client/departamento-client.service.js';
 
@@ -26,7 +27,9 @@ export class FuncionarioService {
     private readonly departamentoClient: DepartamentoClientService,
   ) {}
 
-  async getFuncionarios(dto: GetFuncionariosQueryDto) {
+  async getFuncionarios(
+    dto: GetFuncionariosQueryDto,
+  ): Promise<FuncionarioPaginatedResult> {
     const { funcionarioIds, page = 1, limit = 20, query, status } = dto;
     const isIdLookup = !!funcionarioIds?.length;
 
@@ -164,7 +167,7 @@ export class FuncionarioService {
         quantidadeFuncionarios: Number(row.quantidadeFuncionarios),
       })),
       admissoesRecentes: adimitidosRecentemente.map((f) => ({
-        id: f.id,
+        funcionarioId: f.id,
         funcionarioNome: f.nome,
         departamentoNome: departamentoPorId.get(f.departamentoId)?.nome ?? '',
         cargoNome: cargoPorId.get(f.cargoId)?.nome ?? '',

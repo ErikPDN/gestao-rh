@@ -1,77 +1,98 @@
-import { CargoResult, CreateCargoDto, UpdateCargoDto } from "@app/contracts";
-import { HttpService } from "@nestjs/axios";
-import { HttpException, HttpStatus, Inject, Injectable, Logger } from "@nestjs/common";
-import { AxiosError } from "axios";
-import { firstValueFrom, OperatorFunction, catchError } from "rxjs";
+import {
+  CargoResponse,
+  CargoResult,
+  CreateCargoDto,
+  DEPARTAMENTO_PACKAGE_NAME,
+  DEPARTAMENTO_SERVICE_NAME,
+  DepartamentoServiceClient,
+  fromProtoCargoNivel,
+  toProtoCargoNivel,
+  UpdateCargoDto,
+} from '@app/contracts';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import { type ClientGrpc } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
-export class CargoService {
-  private readonly logger = new Logger(CargoService.name);
+export class CargoService implements OnModuleInit {
+  private departamentoService: DepartamentoServiceClient;
 
   constructor(
-    @Inject('DEPARTAMENTO_SERVICE_URL') private readonly apiUrl: string,
-    private readonly httpService: HttpService
-  ) { }
+    @Inject(DEPARTAMENTO_PACKAGE_NAME) private readonly client: ClientGrpc,
+  ) {}
 
-  async createCargo(departamentoId: string, dto: CreateCargoDto): Promise<CargoResult> {
-    const response = await firstValueFrom(
-      this.httpService
-        .post(`${this.apiUrl}/departamentos/${departamentoId}/cargos/`, dto)
-        .pipe(this.handleError('Error creating cargo'))
-    )
-
-    return response.data;
-  }
-
-  async getAllCargos(departamentoId: string): Promise<CargoResult[]> {
-    const response = await firstValueFrom(
-      this.httpService
-        .get(`${this.apiUrl}/departamentos/${departamentoId}/cargos/`)
-        .pipe(this.handleError('Error fetching cargos'))
-    )
-
-    return response.data;
-  }
-
-  async getCargo(departamentoId: string, cargoId: string): Promise<CargoResult> {
-    const response = await firstValueFrom(
-      this.httpService
-        .get(`${this.apiUrl}/departamentos/${departamentoId}/cargos/${cargoId}`)
-        .pipe(this.handleError('Error fetching cargo'))
-    )
-
-    return response.data;
-  }
-
-
-  async updateCargo(departamentoId: string, cargoId: string, dto: UpdateCargoDto): Promise<CargoResult> {
-    const response = await firstValueFrom(
-      this.httpService
-        .patch(`${this.apiUrl}/departamentos/${departamentoId}/cargos/${cargoId}`, dto)
-        .pipe(this.handleError('Error updating cargo'))
-    )
-
-    return response.data;
-  }
-
-  async desativarCargo(departamentoId: string, cargoId: string): Promise<CargoResult> {
-    const response = await firstValueFrom(
-      this.httpService
-        .post(`${this.apiUrl}/departamentos/${departamentoId}/cargos/${cargoId}/desativar`)
-        .pipe(this.handleError('Error deactivating cargo'))
-    )
-
-    return response.data;
-  }
-
-  private handleError<T>(context: string): OperatorFunction<T, T> {
-    return catchError((error: AxiosError<any>) => {
-      this.logger.error(`${context}: ${error.message}`, error.stack);
-      throw new HttpException(
-        error.response?.data ?? 'Internal Server Error',
-        error.response?.status ?? HttpStatus.INTERNAL_SERVER_ERROR,
+  onModuleInit() {
+    this.departamentoService =
+      this.client.getService<DepartamentoServiceClient>(
+        DEPARTAMENTO_SERVICE_NAME,
       );
-    });
   }
 
+  async createCargo(departamentoId: string, dto: CreateCargoDto) {
+    const response = await firstValueFrom(
+      this.departamentoService.createCargo({
+        departamentoId,
+        nome: dto.nome,
+        salarioBase: dto.salarioBase,
+        salarioTeto: dto.salarioTeto,
+        nivel: toProtoCargoNivel(dto.nivel),
+        ativo: dto.ativo,
+      }),
+    );
+
+    return this.toCargoResult(response);
+  }
+
+  async getAllCargos(departamentoId: string) {
+    const response = await firstValueFrom(
+      this.departamentoService.getCargos({ ids: [], departamentoId }),
+    );
+
+    return response.cargos.map((c) => this.toCargoResult(c));
+  }
+
+  async getCargo(departamentoId: string, cargoId: string) {
+    const response = await firstValueFrom(
+      this.departamentoService.getCargo({ departamentoId, cargoId }),
+    );
+
+    return this.toCargoResult(response);
+  }
+
+  async updateCargo(
+    departamentoId: string,
+    cargoId: string,
+    dto: UpdateCargoDto,
+  ) {
+    const response = await firstValueFrom(
+      this.departamentoService.updateCargo({
+        departamentoId,
+        cargoId,
+        nome: dto.nome,
+        salarioBase: dto.salarioBase,
+        salarioTeto: dto.salarioTeto,
+        nivel: toProtoCargoNivel(dto.nivel),
+        ativo: dto.ativo,
+      }),
+    );
+
+    return this.toCargoResult(response);
+  }
+
+  async desativarCargo(departamentoId: string, cargoId: string) {
+    const response = await firstValueFrom(
+      this.departamentoService.desativarCargo({ departamentoId, cargoId }),
+    );
+
+    return this.toCargoResult(response);
+  }
+
+  private toCargoResult(c: CargoResponse): CargoResult {
+    return {
+      ...c,
+      nivel: fromProtoCargoNivel(c.nivel),
+      createdAt: new Date(c.createdAt),
+      updatedAt: new Date(c.updatedAt),
+    };
+  }
 }

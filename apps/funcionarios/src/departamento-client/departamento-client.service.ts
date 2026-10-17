@@ -48,7 +48,7 @@ export class DepartamentoClientService implements OnModuleInit {
   async getDepartamentos(ids: string[]) {
     try {
       const departamentosResult = await firstValueFrom(
-        this.departamentoService.getDepartamentos({ ids }),
+        this.departamentoService.getDepartamentos({ departamentoIds: ids }),
       );
       return departamentosResult.departamentos;
     } catch (err) {

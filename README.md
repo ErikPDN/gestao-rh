@@ -9,13 +9,15 @@ Cliente (frontend :3000)
         │ HTTP + cookies
         ▼
   api-gateway :3001 ── valida JWT (chave pública) e roles
-        │ HTTP / gRPC
-        ├──────────► funcionarios  :3002 (HTTP) / :50052 (gRPC)  ─► gestao_rh_funcionario
-        ├──────────► departamentos :3003 (HTTP) / :50051 (gRPC)  ─► gestao_rh_departamento
-        └──────────► auth          :3004 (HTTP) / :50053 (gRPC)  ─► gestao_rh_auth
+        │ gRPC
+        ├──────────► funcionarios  :50052  ─► gestao_rh_funcionario
+        ├──────────► departamentos :50051  ─► gestao_rh_departamento
+        └──────────► auth          :50053  ─► gestao_rh_auth
 
   Entre os serviços: gRPC (funcionarios ⇄ departamentos, auth → funcionarios)
 ```
+
+Toda a comunicação interna usa **gRPC**: o gateway é o único ponto com rotas REST e traduz as chamadas HTTP para RPCs dos microserviços (e os erros gRPC de volta para status HTTP). Os microserviços não expõem rotas HTTP.
 
 | Serviço | Responsabilidade |
 |---|---|
@@ -114,10 +116,10 @@ O gateway fica disponível em `http://localhost:3001`.
 | Arquivo | Variáveis |
 |---|---|
 | `.env` (raiz) | `FRONTEND_URL` |
-| `apps/api-gateway/.env` | `PORT`, `FUNCIONARIO_SERVICE_URL`, `DEPARTAMENTO_SERVICE_URL`, `AUTH_GRPC_URL`, `REFRESH_TOKEN_TTL`, `JWT_PUBLIC_KEY_BASE64` |
-| `apps/auth/.env` | `PORT`, `DB_*_AUTH`, `FUNCIONARIO_GRPC_URL`, `AUTH_GRPC_URL`, `JWT_PRIVATE_KEY_BASE64`, `JWT_ACCESS_TTL`, `REFRESH_TOKEN_TTL`, `REFRESH_TOKEN_ABSOLUTE_TTL`, `ADMIN_EMAIL`, `ADMIN_PASSWORD` |
-| `apps/funcionarios/.env` | `PORT`, `DB_*_FUNCIONARIO`, `FUNCIONARIO_GRPC_URL`, `DEPARTAMENTO_GRPC_URL` |
-| `apps/departamentos/.env` | `PORT`, `DB_*_DEPARTAMENTO`, `DEPARTAMENTO_GRPC_URL`, `FUNCIONARIO_GRPC_URL` |
+| `apps/api-gateway/.env` | `PORT`, `FUNCIONARIO_GRPC_URL`, `DEPARTAMENTO_GRPC_URL`, `AUTH_GRPC_URL`, `REFRESH_TOKEN_TTL`, `JWT_PUBLIC_KEY_BASE64` |
+| `apps/auth/.env` | `DB_*_AUTH`, `FUNCIONARIO_GRPC_URL`, `AUTH_GRPC_URL`, `JWT_PRIVATE_KEY_BASE64`, `JWT_ACCESS_TTL`, `REFRESH_TOKEN_TTL`, `REFRESH_TOKEN_ABSOLUTE_TTL`, `ADMIN_EMAIL`, `ADMIN_PASSWORD` |
+| `apps/funcionarios/.env` | `DB_*_FUNCIONARIO`, `FUNCIONARIO_GRPC_URL`, `DEPARTAMENTO_GRPC_URL` |
+| `apps/departamentos/.env` | `DB_*_DEPARTAMENTO`, `DEPARTAMENTO_GRPC_URL`, `FUNCIONARIO_GRPC_URL` |
 
 `REFRESH_TOKEN_TTL` precisa ter o mesmo valor no gateway (duração do cookie) e no auth (validade do token).
 
@@ -134,13 +136,14 @@ O gateway fica disponível em `http://localhost:3001`.
 
 ## Portas
 
-| Serviço | HTTP | gRPC |
+| Serviço | Porta | Protocolo |
 |---|---|---|
-| api-gateway | 3001 | – |
-| funcionarios | 3002 | 50052 |
-| departamentos | 3003 | 50051 |
-| auth | 3004 | 50053 |
+| api-gateway | 3001 | HTTP |
+| funcionarios | 50052 | gRPC |
+| departamentos | 50051 | gRPC |
+| auth | 50053 | gRPC |
 | PostgreSQL | 5432 | – |
+
 
 ## Comandos úteis
 
@@ -149,7 +152,7 @@ pnpm test                                    # testes unitários
 pnpm test:cov                                # cobertura
 pnpm build                                   # build do gateway
 pnpm migration:generate:<servico> <caminho>  # gerar migration (funcionarios | departamentos | auth)
-pnpm proto:gen:funcionario                   # regenerar contratos gRPC (idem :departamento e :auth)
+pnpm proto:gen:funcionario                   # regenerar contratos gRPC (idem :departamento e :auth); rode após editar os .proto
 ```
 
 ## Documentação

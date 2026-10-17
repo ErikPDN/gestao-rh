@@ -2,6 +2,7 @@ export * from './common.module.js';
 export * from './common.service.js';
 export * from './pipes/grpc-validation.pipe.js';
 export * from './filters/grpc-exception.filter.js';
+export * from './filters/http-to-rpc-exception.filter.js';
 export * from './auth/refresh-token-cookie.guard.js';
 export * from './auth/origin.guard.js';
 export * from './auth/jwt-auth.guard.js';
