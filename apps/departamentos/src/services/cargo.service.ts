@@ -21,21 +21,21 @@ export class CargoService {
   ) {}
 
   async createCargo(
-    idDepartamento: string,
+    departamentoId: string,
     dto: CreateCargoDto,
   ): Promise<CargoResult> {
     const existeDepartamento = await this.departamentoRepository.findOne({
-      where: { id: idDepartamento },
+      where: { id: departamentoId },
     });
 
     if (!existeDepartamento) {
       throw new NotFoundException(
-        `Departamento com id ${idDepartamento} não encontrado`,
+        `Departamento com id ${departamentoId} não encontrado`,
       );
     }
 
     const cargoExistente = await this.cargoRepository.findOne({
-      where: { nome: dto.nome, departamentoId: idDepartamento },
+      where: { nome: dto.nome, departamentoId: departamentoId },
     });
 
     if (cargoExistente) {
@@ -49,7 +49,7 @@ export class CargoService {
       nome: dto.nome,
       salarioBase: dto.salarioBase,
       salarioTeto: dto.salarioTeto,
-      departamentoId: idDepartamento,
+      departamentoId: departamentoId,
       nivel: dto.nivel,
       ativo: dto.ativo ?? true,
     });

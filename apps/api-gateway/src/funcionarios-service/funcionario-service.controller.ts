@@ -12,6 +12,9 @@ import {
   GetFuncionariosQueryDto,
   CreateFuncionarioDto,
   UpdateFuncionarioDto,
+  FuncionarioResult,
+  FuncionarioPaginatedResult,
+  FuncionarioDashboardResult,
 } from '@app/contracts';
 
 @Controller('funcionarios')
@@ -19,22 +22,28 @@ export class FuncionarioController {
   constructor(private readonly funcionarioService: FuncionarioService) {}
 
   @Get()
-  getFuncionarios(@Query() query: GetFuncionariosQueryDto) {
+  getFuncionarios(
+    @Query() query: GetFuncionariosQueryDto,
+  ): Promise<FuncionarioPaginatedResult> {
     return this.funcionarioService.getFuncionarios(query);
   }
 
   @Post()
-  createFuncionario(@Body() dto: CreateFuncionarioDto) {
+  createFuncionario(
+    @Body() dto: CreateFuncionarioDto,
+  ): Promise<FuncionarioResult> {
     return this.funcionarioService.createFuncionario(dto);
   }
 
   @Get('dashboard')
-  getDashboard() {
+  getDashboard(): Promise<FuncionarioDashboardResult> {
     return this.funcionarioService.getDashboard();
   }
 
   @Get(':funcionarioId')
-  getFuncionario(@Param('funcionarioId') id: string) {
+  getFuncionario(
+    @Param('funcionarioId') id: string,
+  ): Promise<FuncionarioResult> {
     return this.funcionarioService.getFuncionario(id);
   }
 
@@ -42,12 +51,14 @@ export class FuncionarioController {
   updateFuncionario(
     @Param('funcionarioId') id: string,
     @Body() dto: UpdateFuncionarioDto,
-  ) {
+  ): Promise<FuncionarioResult> {
     return this.funcionarioService.updateFuncionario(id, dto);
   }
 
   @Post(':funcionarioId/demitir')
-  demitirFuncionario(@Param('funcionarioId') id: string) {
+  demitirFuncionario(
+    @Param('funcionarioId') id: string,
+  ): Promise<FuncionarioResult> {
     return this.funcionarioService.demitirFuncionario(id);
   }
 }
