@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { HttpModule } from '@nestjs/axios';
 import { DepartamentoController } from './departamento.controller.js';
 import { DepartamentoService } from './departamento.service.js';
 import { ConfigModule, ConfigService } from '@nestjs/config';
