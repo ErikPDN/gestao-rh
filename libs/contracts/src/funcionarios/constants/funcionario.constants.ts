@@ -1,0 +1,1 @@
+export const IDADE_MINIMA_ADMISSAO = 16;

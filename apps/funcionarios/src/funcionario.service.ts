@@ -16,6 +16,7 @@ import {
   StatusFuncionario,
   FuncionarioPorDepartamentoResult,
   FuncionarioPaginatedResult,
+  IDADE_MINIMA_ADMISSAO,
 } from '@app/contracts';
 import { DepartamentoClientService } from './departamento-client/departamento-client.service.js';
 
@@ -211,6 +212,8 @@ export class FuncionarioService {
       );
     }
 
+    this.validarDatas(dto.dataNascimento, dto.dataAdmissao ?? new Date());
+
     const funcionario = this.funcionarioRepository.create({
       id: crypto.randomUUID(),
       cpfCnpj: dto.cpfCnpj,
@@ -246,6 +249,10 @@ export class FuncionarioService {
     const departamentoId = dto.departamentoId ?? funcionario.departamentoId;
     const cargoId = dto.cargoId ?? funcionario.cargoId;
     const salario = dto.salario ?? Number(funcionario.salario);
+
+    if (dto.dataNascimento !== undefined) {
+      this.validarDatas(dto.dataNascimento, new Date(funcionario.dataAdmissao));
+    }
 
     const [departamento, cargo] = await Promise.all([
       this.departamentoClient.getDepartamento(departamentoId),
@@ -331,6 +338,33 @@ export class FuncionarioService {
       departamentoId: row.departamentoId,
       quantidadeFuncionarios: Number(row.quantidadeFuncionarios),
     }));
+  }
+
+  private validarDatas(dataNascimento: Date, dataAdmissao: Date): void {
+    const agora = new Date();
+
+    if (dataNascimento > agora) {
+      throw new BadRequestException(
+        'A data de nascimento não pode ser uma data futura',
+      );
+    }
+
+    if (dataAdmissao > agora) {
+      throw new BadRequestException(
+        'A data de admissão não pode ser uma data futura',
+      );
+    }
+
+    const dataIdadeMinima = new Date(dataNascimento);
+    dataIdadeMinima.setFullYear(
+      dataIdadeMinima.getFullYear() + IDADE_MINIMA_ADMISSAO,
+    );
+
+    if (dataAdmissao < dataIdadeMinima) {
+      throw new BadRequestException(
+        `O funcionário deve ter pelo menos ${IDADE_MINIMA_ADMISSAO} anos na data de admissão`,
+      );
+    }
   }
 
   private toFuncionarioResponse(

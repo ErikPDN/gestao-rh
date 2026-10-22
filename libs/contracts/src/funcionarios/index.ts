@@ -9,6 +9,7 @@ export * from './dto/create-funcionario.dto.js';
 export * from './dto/update-funcionario.dto.js';
 export * from './dto/get-funcionarios-query.dto.js';
 export * from './mappers/status-funcionario.mapper.js';
+export * from './constants/funcionario.constants.js';
 export type {
   GetFuncionarioRequest,
   FuncionarioResponse,
