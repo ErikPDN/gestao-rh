@@ -52,6 +52,7 @@ export class FuncionarioService {
     const [funcionarios, total] = await this.funcionarioRepository.findAndCount(
       {
         where,
+        order: { nome: 'ASC', id: 'ASC' },
         ...(isIdLookup ? {} : { skip: (page - 1) * limit, take: limit }),
       },
     );

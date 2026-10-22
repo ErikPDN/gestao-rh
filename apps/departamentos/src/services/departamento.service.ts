@@ -106,6 +106,7 @@ export class DepartamentoService {
     const [departamentos, total] =
       await this.departamentoRepository.findAndCount({
         where,
+        order: { nome: 'ASC' },
         ...(isIdLookup ? {} : { skip: (page - 1) * limit, take: limit }),
       });
 

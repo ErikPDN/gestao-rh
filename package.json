@@ -37,7 +37,10 @@
     "proto:gen:departamento": "protoc --ts_proto_out=libs/contracts/src/departamentos/grpc --ts_proto_opt=nestJs=true proto/departamento.proto",
     "proto:gen:funcionario": "protoc --ts_proto_out=libs/contracts/src/funcionarios/grpc --ts_proto_opt=nestJs=true proto/funcionario.proto",
     "proto:gen:auth": "protoc --ts_proto_out=libs/contracts/src/auth/grpc --ts_proto_opt=nestJs=true proto/auth.proto",
-    "seed:auth": "NODE_OPTIONS=\"--loader ts-node/esm --no-warnings\" node apps/auth/src/database/seeds/seed-admin.ts"
+    "seed:auth": "NODE_OPTIONS=\"--loader ts-node/esm --no-warnings\" node apps/auth/src/database/seeds/seed-admin.ts",
+    "seed:departamentos": "NODE_OPTIONS=\"--loader ts-node/esm --no-warnings\" node apps/departamentos/src/database/seeds/seed-departamentos.ts",
+    "seed:funcionarios": "NODE_OPTIONS=\"--loader ts-node/esm --no-warnings\" node apps/funcionarios/src/database/seeds/seed-funcionarios.ts",
+    "seed:demo": "pnpm seed:departamentos && pnpm seed:funcionarios"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.14.4",
