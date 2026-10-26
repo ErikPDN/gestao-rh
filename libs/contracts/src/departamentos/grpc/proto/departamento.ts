@@ -154,6 +154,8 @@ export interface DepartamentoServiceClient {
 
   desativarDepartamento(request: GetDepartamentoRequest): Observable<DepartamentoResponse>;
 
+  reativarDepartamento(request: GetDepartamentoRequest): Observable<DepartamentoResponse>;
+
   createCargo(request: CreateCargoRequest): Observable<CargoResponse>;
 
   getCargo(request: GetCargoRequest): Observable<CargoResponse>;
@@ -194,6 +196,10 @@ export interface DepartamentoServiceController {
     request: GetDepartamentoRequest,
   ): Promise<DepartamentoResponse> | Observable<DepartamentoResponse> | DepartamentoResponse;
 
+  reativarDepartamento(
+    request: GetDepartamentoRequest,
+  ): Promise<DepartamentoResponse> | Observable<DepartamentoResponse> | DepartamentoResponse;
+
   createCargo(request: CreateCargoRequest): Promise<CargoResponse> | Observable<CargoResponse> | CargoResponse;
 
   getCargo(request: GetCargoRequest): Promise<CargoResponse> | Observable<CargoResponse> | CargoResponse;
@@ -215,6 +221,7 @@ export function DepartamentoServiceControllerMethods() {
       "updateDepartamento",
       "removerGestor",
       "desativarDepartamento",
+      "reativarDepartamento",
       "createCargo",
       "getCargo",
       "getCargos",

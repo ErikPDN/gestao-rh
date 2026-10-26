@@ -96,6 +96,14 @@ export class DepartamentoService implements OnModuleInit {
     return this.toDepartamentoResult(response);
   }
 
+  async reativarDepartamento(id: string) {
+    const response = await firstValueFrom(
+      this.departamentoService.reativarDepartamento({ id }),
+    );
+
+    return this.toDepartamentoResult(response);
+  }
+
   private toDepartamentoResult(d: DepartamentoResponse): DepartamentoResult {
     return {
       ...d,

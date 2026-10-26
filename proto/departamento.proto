@@ -10,6 +10,7 @@ service DepartamentoService {
     rpc UpdateDepartamento (UpdateDepartamentoRequest) returns (DepartamentoResponse);
     rpc RemoverGestor (RemoverGestorRequest) returns (RemoverGestorResponse);
     rpc DesativarDepartamento (GetDepartamentoRequest) returns (DepartamentoResponse);
+    rpc ReativarDepartamento (GetDepartamentoRequest) returns (DepartamentoResponse);
     
     rpc CreateCargo (CreateCargoRequest) returns (CargoResponse);
     rpc GetCargo (GetCargoRequest) returns (CargoResponse);

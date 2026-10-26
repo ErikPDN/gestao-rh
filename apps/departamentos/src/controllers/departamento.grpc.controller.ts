@@ -124,6 +124,16 @@ export class DepartamentoGrpcController implements DepartamentoServiceController
     return this.toGrpcDepartamentoResponse(departamento);
   }
 
+  async reativarDepartamento(
+    request: GetDepartamentoRequest,
+  ): Promise<DepartamentoResponse> {
+    const departamento = await this.departamentoService.reativarDepartamento(
+      request.id,
+    );
+
+    return this.toGrpcDepartamentoResponse(departamento);
+  }
+
   async createCargo(request: CreateCargoRequest): Promise<CargoResponse> {
     const { departamentoId, nome, salarioBase, salarioTeto, nivel, ativo } =
       request;

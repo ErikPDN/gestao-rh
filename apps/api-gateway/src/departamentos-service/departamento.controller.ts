@@ -53,4 +53,9 @@ export class DepartamentoController {
   desativarDepartamento(@Param('departamentoId') departamentoId: string) {
     return this.departamentoService.desativarDepartamento(departamentoId);
   }
+
+  @Post(':departamentoId/reativar')
+  reativarDepartamento(@Param('departamentoId') departamentoId: string) {
+    return this.departamentoService.reativarDepartamento(departamentoId);
+  }
 }

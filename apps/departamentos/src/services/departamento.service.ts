@@ -225,6 +225,27 @@ export class DepartamentoService {
     return this.toDepartamentoResult(departamentoDesativado);
   }
 
+  async reativarDepartamento(id: string): Promise<DepartamentoResult> {
+    const departamento = await this.departamentoRepository.findOne({
+      where: { id },
+    });
+
+    if (!departamento)
+      throw new NotFoundException(`Departamento com id ${id} não encontrado`);
+
+    const isAtivo = departamento.ativo;
+
+    if (isAtivo) {
+      throw new BadRequestException(`Departamento com id ${id} já está ativo`);
+    }
+
+    this.departamentoRepository.merge(departamento, { ativo: true });
+    const departamentoReativado =
+      await this.departamentoRepository.save(departamento);
+
+    return this.toDepartamentoResult(departamentoReativado);
+  }
+
   private async contarCargosAtivos(
     departamentoIds: string[],
   ): Promise<Map<string, number>> {
