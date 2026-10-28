@@ -31,7 +31,14 @@ export class FuncionarioService {
   async getFuncionarios(
     dto: GetFuncionariosQueryDto,
   ): Promise<FuncionarioPaginatedResult> {
-    const { funcionarioIds, page = 1, limit = 20, query, status } = dto;
+    const {
+      funcionarioIds,
+      page = 1,
+      limit = 20,
+      query,
+      status,
+      departamentoId,
+    } = dto;
     const isIdLookup = !!funcionarioIds?.length;
 
     const statusWhere =
@@ -41,14 +48,19 @@ export class FuncionarioService {
           ? { dataDemissao: Not(IsNull()) }
           : {};
 
+    const baseWhere = {
+      ...statusWhere,
+      ...(departamentoId ? { departamentoId } : {}),
+    };
+
     const where = isIdLookup
-      ? { id: In(funcionarioIds), ...statusWhere }
+      ? { id: In(funcionarioIds), ...baseWhere }
       : query
         ? [
-            { nome: ILike(`%${query}%`), ...statusWhere },
-            { cpfCnpj: ILike(`%${query}%`), ...statusWhere },
+            { nome: ILike(`%${query}%`), ...baseWhere },
+            { cpfCnpj: ILike(`%${query}%`), ...baseWhere },
           ]
-        : statusWhere;
+        : baseWhere;
 
     const [funcionarios, total] = await this.funcionarioRepository.findAndCount(
       {

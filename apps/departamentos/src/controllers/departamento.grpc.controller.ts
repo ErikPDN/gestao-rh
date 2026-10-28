@@ -206,6 +206,7 @@ export class DepartamentoGrpcController implements DepartamentoServiceController
       descricao: departamento.descricao,
       gestorId: departamento.gestorId,
       gestorNome: departamento.gestorNome,
+      gestorCargo: departamento.gestorCargo,
       totalCargos: departamento.totalCargos,
       totalFuncionarios: departamento.totalFuncionarios,
       createdAt: new Date(departamento.createdAt).toISOString(),

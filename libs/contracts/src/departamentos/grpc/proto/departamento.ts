@@ -88,6 +88,7 @@ export interface DepartamentoResponse {
   createdAt: string;
   updatedAt: string;
   ativo: boolean;
+  gestorCargo?: string | undefined;
 }
 
 export interface UpdateCargoRequest {

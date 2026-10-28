@@ -57,6 +57,7 @@ message GetFuncionariosRequest {
     optional int32 limit = 3;
     optional string query = 4;
     optional StatusFuncionario status = 5;
+    optional string departamentoId = 6;
 }
 
 message FuncionariosResponse {

@@ -57,6 +57,7 @@ export interface GetFuncionariosRequest {
   limit?: number | undefined;
   query?: string | undefined;
   status?: StatusFuncionario | undefined;
+  departamentoId?: string | undefined;
 }
 
 export interface FuncionariosResponse {

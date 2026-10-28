@@ -16,6 +16,10 @@ import { StatusFuncionario } from '../types/status-funcionario.enum.js';
 
 export class GetFuncionariosQueryDto {
   @IsOptional()
+  @IsUUID('4', { message: 'O id do departamento deve ser um UUID válido' })
+  departamentoId?: string;
+
+  @IsOptional()
   @Transform(({ value }) =>
     value == null
       ? undefined

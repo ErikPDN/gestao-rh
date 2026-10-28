@@ -60,13 +60,15 @@ export class FuncionarioGrpcController implements FuncionarioServiceController {
   async getFuncionarios(
     request: GetFuncionariosRequest,
   ): Promise<FuncionariosResponse> {
-    const { funcionarioIds, page, limit, query, status } = request;
+    const { funcionarioIds, page, limit, query, status, departamentoId } =
+      request;
     const funcionarios = await this.funcionarioService.getFuncionarios({
       funcionarioIds,
       page,
       limit,
       query,
       status: fromProtoStatus(status),
+      departamentoId,
     });
 
     return {
