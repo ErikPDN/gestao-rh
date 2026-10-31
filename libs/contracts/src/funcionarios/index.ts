@@ -1,6 +1,7 @@
 export * from './interfaces/funcionario-result.interface.js';
 export * from './interfaces/funcionario-dashboard-result.interface.js';
 export * from './interfaces/funcionario-por-departamento-result.interface.js';
+export * from './interfaces/funcionario-por-cargo-result.interface.js';
 export * from './interfaces/funcionario-paginated-result.interface.js';
 export * from './types/admissoes-recentes.type.js';
 export * from './types/funcionario-departamento.type.js';
@@ -22,6 +23,8 @@ export type {
   UpdateFuncionarioRequest,
   GetDashboardRequest,
   FuncionariosResponse,
+  ContarPorCargoRequest,
+  ContarPorCargoResponse,
 } from './grpc/proto/funcionario.js';
 export {
   FUNCIONARIO_PACKAGE_NAME,

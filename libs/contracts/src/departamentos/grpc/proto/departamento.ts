@@ -124,6 +124,7 @@ export interface CargoResponse {
   createdAt: string;
   updatedAt: string;
   ativo: boolean;
+  totalFuncionarios?: number | undefined;
 }
 
 export interface CargosResponse {

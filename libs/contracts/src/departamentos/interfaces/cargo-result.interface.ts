@@ -5,6 +5,7 @@ export interface CargoResult {
   salarioBase: number;
   salarioTeto: number;
   nivel?: string;
+  totalFuncionarios?: number;
   createdAt: Date;
   updatedAt: Date;
   ativo: boolean;

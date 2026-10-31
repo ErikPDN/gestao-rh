@@ -129,6 +129,7 @@ message CargoResponse {
     string createdAt = 7;
     string updatedAt = 8;
     bool ativo = 9;
+    optional int32 totalFuncionarios = 10;
 }
 
 message CargosResponse {

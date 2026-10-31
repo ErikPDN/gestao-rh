@@ -226,6 +226,7 @@ export class DepartamentoGrpcController implements DepartamentoServiceController
       createdAt: new Date(cargo.createdAt).toISOString(),
       updatedAt: new Date(cargo.updatedAt).toISOString(),
       ativo: cargo.ativo,
+      totalFuncionarios: cargo.totalFuncionarios,
     };
   }
 }

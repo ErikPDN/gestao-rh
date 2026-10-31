@@ -17,6 +17,7 @@ import {
   FuncionarioPorDepartamentoResult,
   FuncionarioPaginatedResult,
   IDADE_MINIMA_ADMISSAO,
+  FuncionarioPorCargoResult,
 } from '@app/contracts';
 import { DepartamentoClientService } from './departamento-client/departamento-client.service.js';
 
@@ -348,6 +349,28 @@ export class FuncionarioService {
 
     return rows.map((row) => ({
       departamentoId: row.departamentoId,
+      quantidadeFuncionarios: Number(row.quantidadeFuncionarios),
+    }));
+  }
+
+  async contarPorCargo(
+    cargoIds: string[],
+  ): Promise<FuncionarioPorCargoResult[]> {
+    if (cargoIds.length === 0) return [];
+
+    const rows = await this.funcionarioRepository
+      .createQueryBuilder('funcionario')
+      .select('funcionario.cargoId', 'cargoId')
+      .addSelect('COUNT(*)', 'quantidadeFuncionarios')
+      .where('funcionario.cargoId IN (:...cargoIds)', {
+        cargoIds,
+      })
+      .andWhere('funcionario.dataDemissao IS NULL')
+      .groupBy('funcionario.cargoId')
+      .getRawMany<FuncionarioPorCargoResult>();
+
+    return rows.map((row) => ({
+      cargoId: row.cargoId,
       quantidadeFuncionarios: Number(row.quantidadeFuncionarios),
     }));
   }

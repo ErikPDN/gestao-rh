@@ -6,6 +6,7 @@ service FuncionarioService {
     rpc GetFuncionario (GetFuncionarioRequest) returns (FuncionarioResponse);
     rpc GetFuncionarios (GetFuncionariosRequest) returns (FuncionariosResponse);
     rpc ContarPorDepartamento (ContarPorDepartamentoRequest) returns (ContarPorDepartamentoResponse);
+    rpc ContarPorCargo (ContarPorCargoRequest) returns (ContarPorCargoResponse);
     rpc CreateFuncionario (CreateFuncionarioRequest) returns (FuncionarioResponse);
     rpc UpdateFuncionario (UpdateFuncionarioRequest) returns (FuncionarioResponse);
     rpc DemitirFuncionario (GetFuncionarioRequest) returns (FuncionarioResponse);
@@ -30,6 +31,19 @@ message FuncionarioResponse {
     string cpfCnpj = 9;
     string cargo = 10;
     string departamento = 11;
+}
+
+message ContarPorCargoRequest {
+    repeated string cargoIds = 1;
+}
+
+message ContagemCargo {
+    string cargoId = 1;
+    int32 quantidadeFuncionarios = 2;
+}
+
+message ContarPorCargoResponse {
+    repeated ContagemCargo contagens = 1;
 }
 
 message ContarPorDepartamentoRequest {

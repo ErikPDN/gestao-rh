@@ -73,4 +73,20 @@ export class FuncionarioClientService implements OnModuleInit {
       );
     }
   }
+
+  async contarPorCargo(cargoIds: string[]) {
+    try {
+      return await firstValueFrom(
+        this.funcionarioService.contarPorCargo({ cargoIds }),
+      );
+    } catch (err) {
+      const error = err as ServiceError;
+      throw new HttpException(
+        error.details ?? 'Internal Server Error',
+        error.code === status.NOT_FOUND
+          ? HttpStatus.NOT_FOUND
+          : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 }

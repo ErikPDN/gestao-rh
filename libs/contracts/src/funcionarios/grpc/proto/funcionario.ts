@@ -38,6 +38,19 @@ export interface FuncionarioResponse {
   departamento: string;
 }
 
+export interface ContarPorCargoRequest {
+  cargoIds: string[];
+}
+
+export interface ContagemCargo {
+  cargoId: string;
+  quantidadeFuncionarios: number;
+}
+
+export interface ContarPorCargoResponse {
+  contagens: ContagemCargo[];
+}
+
 export interface ContarPorDepartamentoRequest {
   departamentoIds: string[];
 }
@@ -118,6 +131,8 @@ export interface FuncionarioServiceClient {
 
   contarPorDepartamento(request: ContarPorDepartamentoRequest): Observable<ContarPorDepartamentoResponse>;
 
+  contarPorCargo(request: ContarPorCargoRequest): Observable<ContarPorCargoResponse>;
+
   createFuncionario(request: CreateFuncionarioRequest): Observable<FuncionarioResponse>;
 
   updateFuncionario(request: UpdateFuncionarioRequest): Observable<FuncionarioResponse>;
@@ -139,6 +154,10 @@ export interface FuncionarioServiceController {
   contarPorDepartamento(
     request: ContarPorDepartamentoRequest,
   ): Promise<ContarPorDepartamentoResponse> | Observable<ContarPorDepartamentoResponse> | ContarPorDepartamentoResponse;
+
+  contarPorCargo(
+    request: ContarPorCargoRequest,
+  ): Promise<ContarPorCargoResponse> | Observable<ContarPorCargoResponse> | ContarPorCargoResponse;
 
   createFuncionario(
     request: CreateFuncionarioRequest,
@@ -163,6 +182,7 @@ export function FuncionarioServiceControllerMethods() {
       "getFuncionario",
       "getFuncionarios",
       "contarPorDepartamento",
+      "contarPorCargo",
       "createFuncionario",
       "updateFuncionario",
       "demitirFuncionario",

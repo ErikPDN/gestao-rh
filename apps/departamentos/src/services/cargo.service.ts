@@ -10,6 +10,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CargoResult, CreateCargoDto, UpdateCargoDto } from '@app/contracts';
 import { Departamento } from '../entities/departamento.entity.js';
 import { In } from 'typeorm/find-options/operator/In.js';
+import { FuncionarioClientService } from '../funcionario-client/funcionario-client.service.js';
 
 @Injectable()
 export class CargoService {
@@ -18,6 +19,7 @@ export class CargoService {
     private cargoRepository: Repository<Cargo>,
     @InjectRepository(Departamento)
     private departamentoRepository: Repository<Departamento>,
+    private readonly funcionarioClient: FuncionarioClientService,
   ) {}
 
   async createCargo(
@@ -91,7 +93,11 @@ export class CargoService {
       where: { departamentoId: idDepartamento },
     });
 
-    return cargos.map((cargo) => this.toCargoResult(cargo));
+    const contagens = await this.contarFuncionarios(cargos.map((c) => c.id));
+
+    return cargos.map((cargo) =>
+      this.toCargoResult(cargo, contagens.get(cargo.id) ?? 0),
+    );
   }
 
   async updateCargo(
@@ -153,7 +159,24 @@ export class CargoService {
     return this.toCargoResult(cargo);
   }
 
-  private toCargoResult(cargo: Cargo): CargoResult {
+  private async contarFuncionarios(
+    ids: string[],
+  ): Promise<Map<string, number>> {
+    if (ids.length === 0) return new Map();
+    try {
+      const { contagens } = await this.funcionarioClient.contarPorCargo(ids);
+      return new Map(
+        contagens.map((c) => [c.cargoId, c.quantidadeFuncionarios]),
+      );
+    } catch {
+      return new Map();
+    }
+  }
+
+  private toCargoResult(
+    cargo: Cargo,
+    quantidadeFuncionarios?: number,
+  ): CargoResult {
     return {
       id: cargo.id,
       nome: cargo.nome,
@@ -161,6 +184,7 @@ export class CargoService {
       salarioBase: Number(cargo.salarioBase),
       salarioTeto: Number(cargo.salarioTeto),
       nivel: cargo.nivel,
+      totalFuncionarios: quantidadeFuncionarios,
       createdAt: cargo.createdAt,
       updatedAt: cargo.updatedAt,
       ativo: cargo.ativo,
