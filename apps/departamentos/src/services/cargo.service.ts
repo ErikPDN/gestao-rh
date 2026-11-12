@@ -90,7 +90,7 @@ export class CargoService {
 
   async listCargos(idDepartamento: string): Promise<CargoResult[]> {
     const cargos = await this.cargoRepository.find({
-      where: { departamentoId: idDepartamento },
+      where: { departamentoId: idDepartamento, ativo: true },
     });
 
     const contagens = await this.contarFuncionarios(cargos.map((c) => c.id));
