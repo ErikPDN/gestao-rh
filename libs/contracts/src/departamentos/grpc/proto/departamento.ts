@@ -88,6 +88,7 @@ export interface DepartamentoResponse {
   createdAt: string;
   updatedAt: string;
   ativo: boolean;
+  gestorCargo?: string | undefined;
 }
 
 export interface UpdateCargoRequest {
@@ -123,6 +124,7 @@ export interface CargoResponse {
   createdAt: string;
   updatedAt: string;
   ativo: boolean;
+  totalFuncionarios?: number | undefined;
 }
 
 export interface CargosResponse {

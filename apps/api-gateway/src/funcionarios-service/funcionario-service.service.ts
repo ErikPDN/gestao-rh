@@ -36,6 +36,7 @@ export class FuncionarioService implements OnModuleInit {
         limit: dto.limit,
         query: dto.query,
         status: toProtoStatus(dto.status),
+        departamentoId: dto.departamentoId,
       }),
     );
 

@@ -80,7 +80,14 @@ export class DepartamentoService {
     if (!departamento)
       throw new NotFoundException(`Departamento com id ${id} não encontrado`);
 
-    return this.toDepartamentoResult(departamento);
+    const gestorCargo = await this.buscarGestorCargo(departamento.gestorId);
+
+    return this.toDepartamentoResult(
+      departamento,
+      undefined,
+      undefined,
+      gestorCargo,
+    );
   }
 
   async getDepartamentos(filtro: GetDepartamentosQueryDto) {
@@ -283,10 +290,24 @@ export class DepartamentoService {
     }
   }
 
+  private async buscarGestorCargo(
+    gestorId?: string,
+  ): Promise<string | undefined> {
+    if (!gestorId) return undefined;
+
+    try {
+      const { data } = await this.funcionarioClient.getFuncionarios([gestorId]);
+      return data[0]?.cargo;
+    } catch {
+      return undefined;
+    }
+  }
+
   private toDepartamentoResult(
     departamento: Departamento,
     totalCargos?: number,
     totalFuncionarios?: number,
+    gestorCargo?: string,
   ): DepartamentoResult {
     return {
       id: departamento.id,
@@ -294,6 +315,7 @@ export class DepartamentoService {
       descricao: departamento.descricao,
       gestorId: departamento.gestorId,
       gestorNome: departamento.gestorNome,
+      gestorCargo: gestorCargo,
       totalCargos: totalCargos,
       totalFuncionarios: totalFuncionarios,
       createdAt: departamento.createdAt,

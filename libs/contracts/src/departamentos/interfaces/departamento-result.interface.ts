@@ -4,6 +4,7 @@ export interface DepartamentoResult {
   descricao?: string;
   gestorId?: string;
   gestorNome?: string;
+  gestorCargo?: string;
   totalCargos?: number;
   totalFuncionarios?: number;
   createdAt: Date;

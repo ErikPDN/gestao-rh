@@ -93,6 +93,7 @@ message DepartamentoResponse {
     string createdAt = 8;
     string updatedAt = 9;
     bool ativo = 10;
+    optional string gestorCargo = 11;
 }
 
 message UpdateCargoRequest {
@@ -128,6 +129,7 @@ message CargoResponse {
     string createdAt = 7;
     string updatedAt = 8;
     bool ativo = 9;
+    optional int32 totalFuncionarios = 10;
 }
 
 message CargosResponse {

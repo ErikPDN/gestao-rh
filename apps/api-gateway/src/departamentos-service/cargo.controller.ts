@@ -29,7 +29,7 @@ export class CargoController {
     return this.cargoService.getCargo(departamentoId, cargoId);
   }
 
-  @Patch()
+  @Patch(':cargoId')
   updateCargo(
     @Param('departamentoId') departamentoId: string,
     @Param('cargoId') cargoId: string,

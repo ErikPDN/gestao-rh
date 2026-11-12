@@ -44,10 +44,40 @@ export class FuncionarioClientService implements OnModuleInit {
     }
   }
 
+  async getFuncionarios(funcionarioIds: string[]) {
+    try {
+      return await firstValueFrom(
+        this.funcionarioService.getFuncionarios({ funcionarioIds }),
+      );
+    } catch (err) {
+      const error = err as ServiceError;
+      throw new HttpException(
+        error.details ?? 'Internal Server Error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   async contarPorDepartamento(departamentoIds: string[]) {
     try {
       return await firstValueFrom(
         this.funcionarioService.contarPorDepartamento({ departamentoIds }),
+      );
+    } catch (err) {
+      const error = err as ServiceError;
+      throw new HttpException(
+        error.details ?? 'Internal Server Error',
+        error.code === status.NOT_FOUND
+          ? HttpStatus.NOT_FOUND
+          : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async contarPorCargo(cargoIds: string[]) {
+    try {
+      return await firstValueFrom(
+        this.funcionarioService.contarPorCargo({ cargoIds }),
       );
     } catch (err) {
       const error = err as ServiceError;

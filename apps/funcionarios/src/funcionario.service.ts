@@ -17,6 +17,7 @@ import {
   FuncionarioPorDepartamentoResult,
   FuncionarioPaginatedResult,
   IDADE_MINIMA_ADMISSAO,
+  FuncionarioPorCargoResult,
 } from '@app/contracts';
 import { DepartamentoClientService } from './departamento-client/departamento-client.service.js';
 
@@ -31,7 +32,14 @@ export class FuncionarioService {
   async getFuncionarios(
     dto: GetFuncionariosQueryDto,
   ): Promise<FuncionarioPaginatedResult> {
-    const { funcionarioIds, page = 1, limit = 20, query, status } = dto;
+    const {
+      funcionarioIds,
+      page = 1,
+      limit = 20,
+      query,
+      status,
+      departamentoId,
+    } = dto;
     const isIdLookup = !!funcionarioIds?.length;
 
     const statusWhere =
@@ -41,14 +49,19 @@ export class FuncionarioService {
           ? { dataDemissao: Not(IsNull()) }
           : {};
 
+    const baseWhere = {
+      ...statusWhere,
+      ...(departamentoId ? { departamentoId } : {}),
+    };
+
     const where = isIdLookup
-      ? { id: In(funcionarioIds), ...statusWhere }
+      ? { id: In(funcionarioIds), ...baseWhere }
       : query
         ? [
-            { nome: ILike(`%${query}%`), ...statusWhere },
-            { cpfCnpj: ILike(`%${query}%`), ...statusWhere },
+            { nome: ILike(`%${query}%`), ...baseWhere },
+            { cpfCnpj: ILike(`%${query}%`), ...baseWhere },
           ]
-        : statusWhere;
+        : baseWhere;
 
     const [funcionarios, total] = await this.funcionarioRepository.findAndCount(
       {
@@ -336,6 +349,28 @@ export class FuncionarioService {
 
     return rows.map((row) => ({
       departamentoId: row.departamentoId,
+      quantidadeFuncionarios: Number(row.quantidadeFuncionarios),
+    }));
+  }
+
+  async contarPorCargo(
+    cargoIds: string[],
+  ): Promise<FuncionarioPorCargoResult[]> {
+    if (cargoIds.length === 0) return [];
+
+    const rows = await this.funcionarioRepository
+      .createQueryBuilder('funcionario')
+      .select('funcionario.cargoId', 'cargoId')
+      .addSelect('COUNT(*)', 'quantidadeFuncionarios')
+      .where('funcionario.cargoId IN (:...cargoIds)', {
+        cargoIds,
+      })
+      .andWhere('funcionario.dataDemissao IS NULL')
+      .groupBy('funcionario.cargoId')
+      .getRawMany<FuncionarioPorCargoResult>();
+
+    return rows.map((row) => ({
+      cargoId: row.cargoId,
       quantidadeFuncionarios: Number(row.quantidadeFuncionarios),
     }));
   }
