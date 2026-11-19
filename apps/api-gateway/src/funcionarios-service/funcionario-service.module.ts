@@ -4,6 +4,8 @@ import { FuncionarioService } from './funcionario-service.service.js';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { FUNCIONARIO_PACKAGE_NAME } from '@app/contracts';
+import { grpcCredentials } from '@app/common/grpc/grpc-credentials.js';
+import { GRPC_LOADER_OPTIONS } from '@app/common/grpc/grpc-loader.js';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { FUNCIONARIO_PACKAGE_NAME } from '@app/contracts';
             package: FUNCIONARIO_PACKAGE_NAME,
             protoPath: 'proto/funcionario.proto',
             url: configService.getOrThrow<string>('FUNCIONARIO_GRPC_URL'),
+            credentials: grpcCredentials(),
+            loader: GRPC_LOADER_OPTIONS,
           },
         }),
         inject: [ConfigService],

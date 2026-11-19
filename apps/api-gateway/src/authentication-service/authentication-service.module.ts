@@ -5,6 +5,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AUTH_PACKAGE_NAME } from '@app/contracts';
 import { join } from 'path';
+import { grpcCredentials } from '@app/common/grpc/grpc-credentials.js';
+import { GRPC_LOADER_OPTIONS } from '@app/common/grpc/grpc-loader.js';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { join } from 'path';
             package: AUTH_PACKAGE_NAME,
             protoPath: join(process.cwd(), 'proto/auth.proto'),
             url: configService.getOrThrow<string>('AUTH_GRPC_URL'),
+            credentials: grpcCredentials(),
+            loader: GRPC_LOADER_OPTIONS,
           },
         }),
         inject: [ConfigService],

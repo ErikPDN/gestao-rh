@@ -4,7 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { DEPARTAMENTO_PACKAGE_NAME } from '@app/contracts';
 import { join } from 'path';
-import { HttpToRpcExceptionFilter } from '@app/common';
+import { GRPC_LOADER_OPTIONS, HttpToRpcExceptionFilter } from '@app/common';
 
 async function bootstrap() {
   const url = process.env.DEPARTAMENTO_GRPC_URL ?? 'localhost:50051';
@@ -17,6 +17,7 @@ async function bootstrap() {
         package: DEPARTAMENTO_PACKAGE_NAME,
         protoPath: join(process.cwd(), 'proto/departamento.proto'),
         url,
+        loader: GRPC_LOADER_OPTIONS,
       },
     },
   );

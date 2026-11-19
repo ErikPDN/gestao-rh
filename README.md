@@ -155,6 +155,16 @@ pnpm migration:generate:<servico> <caminho>  # gerar migration (funcionarios | d
 pnpm proto:gen:funcionario                   # regenerar contratos gRPC (idem :departamento e :auth); rode após editar os .proto
 ```
 
+## Deploy em produção
+
+O backend roda no **Google Cloud Run** (um serviço por app), com **Cloud SQL** (PostgreSQL), **Artifact Registry** e **Secret Manager**, sem VMs. Os scripts ficam em [infra/](infra/) e o passo a passo completo, com variáveis, verificação, custos e problemas comuns, está em [DEPLOY.md](DEPLOY.md).
+
+```bash
+bash infra/deploy.sh   # build das imagens (Dockerfile único, --build-arg APP) + deploy dos 4 serviços
+```
+
+O front é publicado a partir do repositório `gestao-rh-ui`.
+
 ## Documentação
 
 Requisitos e decisões de domínio: [docs/rh-requisitos.md](docs/rh-requisitos.md).

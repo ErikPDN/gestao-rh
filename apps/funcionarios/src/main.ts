@@ -3,7 +3,7 @@ import { FuncionarioModule } from './funcionario.module.js';
 import { ValidationPipe } from '@nestjs/common';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { FUNCIONARIO_PACKAGE_NAME } from '@app/contracts/funcionarios/index.js';
-import { HttpToRpcExceptionFilter } from '@app/common';
+import { GRPC_LOADER_OPTIONS, HttpToRpcExceptionFilter } from '@app/common';
 import { join } from 'path';
 
 async function bootstrap() {
@@ -17,6 +17,7 @@ async function bootstrap() {
         package: FUNCIONARIO_PACKAGE_NAME,
         protoPath: join(process.cwd(), 'proto/funcionario.proto'),
         url,
+        loader: GRPC_LOADER_OPTIONS,
       },
     },
   );

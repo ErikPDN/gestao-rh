@@ -11,3 +11,5 @@ export * from './auth/public.decorator.js';
 export * from './auth/roles.decorator.js';
 export * from './auth/current-user.decorator.js';
 export * from './auth/authenticated-request.interface.js';
+export * from './grpc/grpc-credentials.js';
+export * from './grpc/grpc-loader.js';
