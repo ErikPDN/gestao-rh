@@ -4,7 +4,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { DEPARTAMENTO_PACKAGE_NAME } from '@app/contracts';
 import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
-
+import { grpcCredentials } from '@app/common/grpc/grpc-credentials.js';
 @Module({
   imports: [
     ClientsModule.registerAsync([
@@ -16,6 +16,7 @@ import { join } from 'path';
             package: DEPARTAMENTO_PACKAGE_NAME,
             protoPath: join(process.cwd(), 'proto/departamento.proto'),
             url: configService.getOrThrow<string>('DEPARTAMENTO_GRPC_URL'),
+            credentials: grpcCredentials(),
           },
         }),
         inject: [ConfigService],
