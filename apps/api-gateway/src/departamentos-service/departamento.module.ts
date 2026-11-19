@@ -7,6 +7,7 @@ import { CargoService } from './cargo.service.js';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { DEPARTAMENTO_PACKAGE_NAME } from '@app/contracts';
 import { grpcCredentials } from '@app/common/grpc/grpc-credentials.js';
+import { GRPC_LOADER_OPTIONS } from '@app/common/grpc/grpc-loader.js';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { grpcCredentials } from '@app/common/grpc/grpc-credentials.js';
             protoPath: 'proto/departamento.proto',
             url: configService.getOrThrow<string>('DEPARTAMENTO_GRPC_URL'),
             credentials: grpcCredentials(),
+            loader: GRPC_LOADER_OPTIONS,
           },
         }),
         inject: [ConfigService],

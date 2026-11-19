@@ -5,6 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { FUNCIONARIO_PACKAGE_NAME } from '@app/contracts';
 import { grpcCredentials } from '@app/common/grpc/grpc-credentials.js';
+import { GRPC_LOADER_OPTIONS } from '@app/common/grpc/grpc-loader.js';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { grpcCredentials } from '@app/common/grpc/grpc-credentials.js';
             protoPath: 'proto/funcionario.proto',
             url: configService.getOrThrow<string>('FUNCIONARIO_GRPC_URL'),
             credentials: grpcCredentials(),
+            loader: GRPC_LOADER_OPTIONS,
           },
         }),
         inject: [ConfigService],
