@@ -50,6 +50,10 @@ export interface UsuarioResponse {
   email: string;
   roles: string[];
   funcionarioId: string;
+  nome?: string | undefined;
+  avatarUrl?: string | undefined;
+  cargo?: string | undefined;
+  departamento?: string | undefined;
 }
 
 export const AUTH_PACKAGE_NAME = "auth";

@@ -50,4 +50,8 @@ message UsuarioResponse {
     string email = 2;
     repeated string roles = 3;
     string funcionarioId = 4;
+    optional string nome = 5;
+    optional string avatarUrl = 6;
+    optional string cargo = 7;
+    optional string departamento = 8;
 }

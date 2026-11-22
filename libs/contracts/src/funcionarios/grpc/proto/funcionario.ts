@@ -36,6 +36,7 @@ export interface FuncionarioResponse {
   cpfCnpj: string;
   cargo: string;
   departamento: string;
+  avatarUrl?: string | undefined;
 }
 
 export interface ContarPorCargoRequest {

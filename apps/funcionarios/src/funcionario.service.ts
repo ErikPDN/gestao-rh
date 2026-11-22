@@ -102,6 +102,10 @@ export class FuncionarioService {
   }
 
   async getFuncionario(id: string): Promise<FuncionarioResult> {
+    if (!id) {
+      throw new BadRequestException('Id do funcionário é obrigatório');
+    }
+
     const funcionario = await this.funcionarioRepository.findOne({
       where: { id },
     });

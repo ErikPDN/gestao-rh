@@ -5,6 +5,7 @@ import { Usuario } from '../entities/usuario.entity.js';
 import {
   AuthResponse,
   CreateUsuarioDto,
+  FuncionarioResponse,
   LoginDto,
   LogoutResponse,
   UsuarioResponse,
@@ -173,7 +174,22 @@ export class AuthService {
       throw this.error(status.NOT_FOUND, 'Usuário não encontrado.');
     }
 
-    return this.toUsuarioResponse(usuario);
+    let funcionario: FuncionarioResponse | undefined;
+
+    if (usuario.funcionarioId) {
+      funcionario = await this.funcionarioClient.getFuncionario(
+        usuario.funcionarioId,
+      );
+
+      if (funcionario.dataDemissao) {
+        throw this.error(
+          status.FAILED_PRECONDITION,
+          'Funcionário está desligado e não pode ter usuário',
+        );
+      }
+    }
+
+    return this.toUsuarioResponse(usuario, funcionario);
   }
 
   private async revokeFamily(familyId: string) {
@@ -201,20 +217,34 @@ export class AuthService {
       }),
     );
 
+    let funcionario: FuncionarioResponse | undefined;
+    if (usuario.funcionarioId) {
+      funcionario = await this.funcionarioClient.getFuncionario(
+        usuario.funcionarioId,
+      );
+    }
+
     return {
       accessToken: await this.tokenService.signAccessToken(usuario),
       refreshToken: token,
       expiresIn: this.tokenService.accessTtlSeconds,
-      usuario: this.toUsuarioResponse(usuario),
+      usuario: this.toUsuarioResponse(usuario, funcionario),
     };
   }
 
-  private toUsuarioResponse(usuario: Usuario): UsuarioResponse {
+  private toUsuarioResponse(
+    usuario: Usuario,
+    funcionario?: FuncionarioResponse,
+  ): UsuarioResponse {
     return {
       id: usuario.id,
       email: usuario.email,
       roles: usuario.roles,
       funcionarioId: usuario.funcionarioId ?? '',
+      nome: funcionario?.nome,
+      avatarUrl: funcionario?.avatarUrl,
+      cargo: funcionario?.cargo,
+      departamento: funcionario?.departamento,
     };
   }
 
