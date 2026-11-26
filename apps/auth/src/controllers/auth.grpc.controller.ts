@@ -13,6 +13,10 @@ import {
   UsuarioResponse,
 } from '@app/contracts';
 import { GrpcValidationPipe } from '@app/common';
+import {
+  AlterarSenhaRequest,
+  AlterarSenhaResponse,
+} from '@app/contracts/auth/grpc/proto/auth.js';
 
 @Controller()
 @AuthServiceControllerMethods()
@@ -46,5 +50,13 @@ export class AuthController implements AuthServiceController {
     const { id } = request;
 
     return this.authService.getUsuario(id);
+  }
+
+  async alterarSenha(
+    request: AlterarSenhaRequest,
+  ): Promise<AlterarSenhaResponse> {
+    const { id, senhaAtual, senhaNova } = request;
+
+    return this.authService.alterarSenha(id, senhaAtual, senhaNova);
   }
 }

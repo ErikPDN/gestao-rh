@@ -19,6 +19,7 @@ export * from './enums/role.enum.js';
 export * from './dto/refresh-token.dto.js';
 export * from './dto/login.dto.js';
 export * from './dto/create-usuario.dto.js';
+export * from './dto/alterar-senha.dto.js';
 export * from './interfaces/jwt-payload.interface.js';
 export * from './interfaces/refresh-token.interface.js';
 export * from './interfaces/authentication-response.interface.js';

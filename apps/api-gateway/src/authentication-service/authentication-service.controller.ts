@@ -8,6 +8,7 @@ import {
   Res,
   UseGuards,
   Req,
+  Patch,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthenticationService } from './authentication-service.service.js';
@@ -27,7 +28,7 @@ import {
   Role,
   UsuarioResponse,
 } from '@app/contracts';
-import type { JwtPayload } from '@app/contracts';
+import type { AlterarSenhaDto, JwtPayload } from '@app/contracts';
 
 @Controller('auth')
 export class AuthenticationController {
@@ -89,6 +90,19 @@ export class AuthenticationController {
   @Get('me')
   async getUsuario(@CurrentUser() user: JwtPayload): Promise<UsuarioResponse> {
     return await this.authenticationService.getUsuario(user.sub);
+  }
+
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Patch('senha')
+  async alterarSenha(
+    @CurrentUser() user: JwtPayload,
+    @Body() body: AlterarSenhaDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    await this.authenticationService.alterarSenha(user.sub, body);
+
+    // as sessoes foram invalidadas, o refresh token atual deve ser removido do cookie
+    res.clearCookie(REFRESH_TOKEN_COOKIE, { path: '/auth' });
   }
 
   private setRefreshTokenCookie(res: Response, refreshToken: string) {

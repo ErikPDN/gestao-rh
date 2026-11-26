@@ -27,6 +27,17 @@ export interface LogoutResponse {
   success: boolean;
 }
 
+export interface AlterarSenhaRequest {
+  /** vem do JWT(sub), nunca do body */
+  id: string;
+  senhaAtual: string;
+  senhaNova: string;
+}
+
+export interface AlterarSenhaResponse {
+  success: boolean;
+}
+
 export interface AuthResponse {
   accessToken: string;
   refreshToken: string;
@@ -68,6 +79,8 @@ export interface AuthServiceClient {
   criarUsuario(request: CriarUsuarioRequest): Observable<UsuarioResponse>;
 
   getUsuario(request: GetUsuarioRequest): Observable<UsuarioResponse>;
+
+  alterarSenha(request: AlterarSenhaRequest): Observable<AlterarSenhaResponse>;
 }
 
 export interface AuthServiceController {
@@ -80,11 +93,15 @@ export interface AuthServiceController {
   criarUsuario(request: CriarUsuarioRequest): Promise<UsuarioResponse> | Observable<UsuarioResponse> | UsuarioResponse;
 
   getUsuario(request: GetUsuarioRequest): Promise<UsuarioResponse> | Observable<UsuarioResponse> | UsuarioResponse;
+
+  alterarSenha(
+    request: AlterarSenhaRequest,
+  ): Promise<AlterarSenhaResponse> | Observable<AlterarSenhaResponse> | AlterarSenhaResponse;
 }
 
 export function AuthServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["login", "refresh", "logout", "criarUsuario", "getUsuario"];
+    const grpcMethods: string[] = ["login", "refresh", "logout", "criarUsuario", "getUsuario", "alterarSenha"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("AuthService", method)(constructor.prototype[method], method, descriptor);

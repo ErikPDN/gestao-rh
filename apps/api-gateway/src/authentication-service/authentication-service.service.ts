@@ -1,4 +1,5 @@
 import {
+  AlterarSenhaDto,
   AUTH_PACKAGE_NAME,
   AUTH_SERVICE_NAME,
   AuthServiceClient,
@@ -38,5 +39,9 @@ export class AuthenticationService implements OnModuleInit {
 
   getUsuario(id: string) {
     return firstValueFrom(this.authService.getUsuario({ id }));
+  }
+
+  alterarSenha(id: string, dto: AlterarSenhaDto) {
+    return firstValueFrom(this.authService.alterarSenha({ id, ...dto }));
   }
 }

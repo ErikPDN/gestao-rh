@@ -8,6 +8,7 @@ service AuthService {
     rpc Logout (LogoutRequest) returns (LogoutResponse);
     rpc CriarUsuario (CriarUsuarioRequest) returns (UsuarioResponse);
     rpc GetUsuario (GetUsuarioRequest) returns (UsuarioResponse);
+    rpc AlterarSenha (AlterarSenhaRequest) returns (AlterarSenhaResponse);
 }
 
 message LoginRequest {
@@ -24,6 +25,16 @@ message LogoutRequest {
 }
 
 message LogoutResponse {
+    bool success = 1;
+}
+
+message AlterarSenhaRequest {
+    string id = 1; // vem do JWT(sub), nunca do body
+    string senhaAtual = 2;
+    string senhaNova = 3;
+}
+
+message AlterarSenhaResponse {
     bool success = 1;
 }
 

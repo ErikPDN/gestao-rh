@@ -17,6 +17,7 @@ import { RpcException } from '@nestjs/microservices';
 import { status } from '@grpc/grpc-js';
 import { RefreshToken } from '../entities/refresh-token.entity.js';
 import { IsNull, Repository } from 'typeorm';
+import { AlterarSenhaResponse } from '@app/contracts/auth/grpc/proto/auth.js';
 
 @Injectable()
 export class AuthService {
@@ -190,6 +191,39 @@ export class AuthService {
     }
 
     return this.toUsuarioResponse(usuario, funcionario);
+  }
+
+  async alterarSenha(
+    id: string,
+    senhaAtual: string,
+    senhaNova: string,
+  ): Promise<AlterarSenhaResponse> {
+    const usuario = await this.usuarioRepository.findOne({ where: { id } });
+
+    if (!usuario || !usuario.ativo) {
+      throw this.error(status.NOT_FOUND, 'Usuário não encontrado.');
+    }
+
+    if (!(await argon2.verify(usuario.senhaHash, senhaAtual))) {
+      throw this.error(status.PERMISSION_DENIED, 'Senha atual incorreta.');
+    }
+
+    if (senhaAtual === senhaNova) {
+      throw this.error(
+        status.INVALID_ARGUMENT,
+        'A nova senha deve ser diferente da senha atual.',
+      );
+    }
+
+    usuario.senhaHash = await argon2.hash(senhaNova);
+    await this.usuarioRepository.save(usuario);
+
+    await this.refreshTokenRepository.update(
+      { usuarioId: usuario.id, revokedAt: IsNull() },
+      { revokedAt: new Date() },
+    );
+
+    return { success: true };
   }
 
   private async revokeFamily(familyId: string) {
