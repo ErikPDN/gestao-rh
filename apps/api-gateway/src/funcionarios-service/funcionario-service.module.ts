@@ -6,9 +6,11 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { FUNCIONARIO_PACKAGE_NAME } from '@app/contracts';
 import { grpcCredentials } from '@app/common/grpc/grpc-credentials.js';
 import { GRPC_LOADER_OPTIONS } from '@app/common/grpc/grpc-loader.js';
+import { AuthenticationModule } from '../authentication-service/authentication-service.module.js';
 
 @Module({
   imports: [
+    AuthenticationModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['./apps/api-gateway/.env', '.env'],

@@ -31,7 +31,7 @@ message FuncionarioResponse {
     string cpfCnpj = 9;
     string cargo = 10;
     string departamento = 11;
-    optional string avatarUrl = 12;
+    reserved 12;
 }
 
 message ContarPorCargoRequest {

@@ -18,6 +18,8 @@ import {
   AlterarSenhaResponse,
   DeleteAvatarRequest,
   DeleteAvatarResponse,
+  GetAvataresRequest,
+  GetAvataresResponse,
   UploadAvatarRequest,
   UploadAvatarResponse,
 } from '@app/contracts/auth/grpc/proto/auth.js';
@@ -80,5 +82,9 @@ export class AuthController implements AuthServiceController {
 
     await this.authService.deleteAvatar(usuarioId);
     return {};
+  }
+
+  async getAvatares(request: GetAvataresRequest): Promise<GetAvataresResponse> {
+    return this.authService.getAvatares(request.funcionarioIds);
   }
 }

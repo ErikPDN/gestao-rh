@@ -54,6 +54,19 @@ export interface DeleteAvatarRequest {
 export interface DeleteAvatarResponse {
 }
 
+export interface GetAvataresRequest {
+  funcionarioIds: string[];
+}
+
+export interface AvatarFuncionario {
+  funcionarioId: string;
+  avatarUrl: string;
+}
+
+export interface GetAvataresResponse {
+  avatares: AvatarFuncionario[];
+}
+
 export interface AuthResponse {
   accessToken: string;
   refreshToken: string;
@@ -101,6 +114,8 @@ export interface AuthServiceClient {
   uploadAvatar(request: UploadAvatarRequest): Observable<UploadAvatarResponse>;
 
   deleteAvatar(request: DeleteAvatarRequest): Observable<DeleteAvatarResponse>;
+
+  getAvatares(request: GetAvataresRequest): Observable<GetAvataresResponse>;
 }
 
 export interface AuthServiceController {
@@ -125,6 +140,10 @@ export interface AuthServiceController {
   deleteAvatar(
     request: DeleteAvatarRequest,
   ): Promise<DeleteAvatarResponse> | Observable<DeleteAvatarResponse> | DeleteAvatarResponse;
+
+  getAvatares(
+    request: GetAvataresRequest,
+  ): Promise<GetAvataresResponse> | Observable<GetAvataresResponse> | GetAvataresResponse;
 }
 
 export function AuthServiceControllerMethods() {
@@ -138,6 +157,7 @@ export function AuthServiceControllerMethods() {
       "alterarSenha",
       "uploadAvatar",
       "deleteAvatar",
+      "getAvatares",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

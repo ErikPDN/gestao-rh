@@ -10,4 +10,5 @@ export interface FuncionarioResult {
   dataNascimento: Date;
   dataAdmissao: Date;
   dataDemissao?: Date;
+  avatarUrl?: string;
 }

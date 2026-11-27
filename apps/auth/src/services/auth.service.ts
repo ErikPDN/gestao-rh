@@ -16,8 +16,11 @@ import * as argon2 from 'argon2';
 import { RpcException } from '@nestjs/microservices';
 import { status } from '@grpc/grpc-js';
 import { RefreshToken } from '../entities/refresh-token.entity.js';
-import { IsNull, Repository } from 'typeorm';
-import { UploadAvatarResponse } from '@app/contracts/auth/grpc/proto/auth.js';
+import { In, IsNull, Not, Repository } from 'typeorm';
+import {
+  GetAvataresResponse,
+  UploadAvatarResponse,
+} from '@app/contracts/auth/grpc/proto/auth.js';
 import { StorageService } from '../storage/storage.service.js';
 
 @Injectable()
@@ -262,6 +265,26 @@ export class AuthService {
 
     await this.usuarioRepository.update(usuarioId, { avatarKey: null });
     await this.storageService.delete(usuario.avatarKey);
+  }
+
+  async getAvatares(funcionarioIds: string[]): Promise<GetAvataresResponse> {
+    if (!funcionarioIds.length) return { avatares: [] };
+
+    const usuarios = await this.usuarioRepository.find({
+      where: {
+        funcionarioId: In(funcionarioIds),
+        avatarKey: Not(IsNull()),
+      },
+    });
+
+    return {
+      avatares: await Promise.all(
+        usuarios.map(async (usuario) => ({
+          funcionarioId: usuario.funcionarioId!,
+          avatarUrl: await this.storageService.getUrl(usuario.avatarKey!),
+        })),
+      ),
+    };
   }
 
   private async revokeFamily(familyId: string) {

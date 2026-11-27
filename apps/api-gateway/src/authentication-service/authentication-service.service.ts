@@ -58,4 +58,12 @@ export class AuthenticationService implements OnModuleInit {
   deleteAvatar(usuarioId: string) {
     return firstValueFrom(this.authService.deleteAvatar({ usuarioId }));
   }
+
+  async getAvatares(funcionarioIds: string[]) {
+    const { avatares } = await firstValueFrom(
+      this.authService.getAvatares({ funcionarioIds }),
+    );
+
+    return new Map(avatares.map((a) => [a.funcionarioId, a.avatarUrl]));
+  }
 }
