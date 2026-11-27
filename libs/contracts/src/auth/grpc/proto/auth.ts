@@ -35,7 +35,23 @@ export interface AlterarSenhaRequest {
 }
 
 export interface AlterarSenhaResponse {
-  success: boolean;
+}
+
+export interface UploadAvatarRequest {
+  usuarioId: string;
+  conteudo: Uint8Array;
+  contentType: string;
+}
+
+export interface UploadAvatarResponse {
+  avatarUrl: string;
+}
+
+export interface DeleteAvatarRequest {
+  usuarioId: string;
+}
+
+export interface DeleteAvatarResponse {
 }
 
 export interface AuthResponse {
@@ -81,6 +97,10 @@ export interface AuthServiceClient {
   getUsuario(request: GetUsuarioRequest): Observable<UsuarioResponse>;
 
   alterarSenha(request: AlterarSenhaRequest): Observable<AlterarSenhaResponse>;
+
+  uploadAvatar(request: UploadAvatarRequest): Observable<UploadAvatarResponse>;
+
+  deleteAvatar(request: DeleteAvatarRequest): Observable<DeleteAvatarResponse>;
 }
 
 export interface AuthServiceController {
@@ -97,11 +117,28 @@ export interface AuthServiceController {
   alterarSenha(
     request: AlterarSenhaRequest,
   ): Promise<AlterarSenhaResponse> | Observable<AlterarSenhaResponse> | AlterarSenhaResponse;
+
+  uploadAvatar(
+    request: UploadAvatarRequest,
+  ): Promise<UploadAvatarResponse> | Observable<UploadAvatarResponse> | UploadAvatarResponse;
+
+  deleteAvatar(
+    request: DeleteAvatarRequest,
+  ): Promise<DeleteAvatarResponse> | Observable<DeleteAvatarResponse> | DeleteAvatarResponse;
 }
 
 export function AuthServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["login", "refresh", "logout", "criarUsuario", "getUsuario", "alterarSenha"];
+    const grpcMethods: string[] = [
+      "login",
+      "refresh",
+      "logout",
+      "criarUsuario",
+      "getUsuario",
+      "alterarSenha",
+      "uploadAvatar",
+      "deleteAvatar",
+    ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("AuthService", method)(constructor.prototype[method], method, descriptor);

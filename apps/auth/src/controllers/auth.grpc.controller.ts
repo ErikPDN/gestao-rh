@@ -16,6 +16,10 @@ import { GrpcValidationPipe } from '@app/common';
 import {
   AlterarSenhaRequest,
   AlterarSenhaResponse,
+  DeleteAvatarRequest,
+  DeleteAvatarResponse,
+  UploadAvatarRequest,
+  UploadAvatarResponse,
 } from '@app/contracts/auth/grpc/proto/auth.js';
 
 @Controller()
@@ -57,6 +61,24 @@ export class AuthController implements AuthServiceController {
   ): Promise<AlterarSenhaResponse> {
     const { id, senhaAtual, senhaNova } = request;
 
-    return this.authService.alterarSenha(id, senhaAtual, senhaNova);
+    await this.authService.alterarSenha(id, senhaAtual, senhaNova);
+    return {};
+  }
+
+  async uploadAvatar(
+    request: UploadAvatarRequest,
+  ): Promise<UploadAvatarResponse> {
+    const { usuarioId, conteudo, contentType } = request;
+
+    return this.authService.updateAvatar(usuarioId, conteudo, contentType);
+  }
+
+  async deleteAvatar(
+    request: DeleteAvatarRequest,
+  ): Promise<DeleteAvatarResponse> {
+    const { usuarioId } = request;
+
+    await this.authService.deleteAvatar(usuarioId);
+    return {};
   }
 }

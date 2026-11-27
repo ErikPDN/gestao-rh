@@ -9,6 +9,7 @@ import { Usuario } from './entities/usuario.entity.js';
 import { TokenService } from './services/token.service.js';
 import { JwtModule } from '@nestjs/jwt';
 import { FuncionarioClientModule } from './funcionario-client/funcionario-client.module.js';
+import { StorageService } from './storage/storage.service.js';
 
 @Module({
   imports: [
@@ -34,6 +35,6 @@ import { FuncionarioClientModule } from './funcionario-client/funcionario-client
     FuncionarioClientModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, TokenService],
+  providers: [AuthService, TokenService, StorageService],
 })
 export class AuthModule {}

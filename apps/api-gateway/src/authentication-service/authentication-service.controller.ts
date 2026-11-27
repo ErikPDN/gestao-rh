@@ -9,6 +9,12 @@ import {
   UseGuards,
   Req,
   Patch,
+  UseInterceptors,
+  UploadedFile,
+  ParseFilePipe,
+  MaxFileSizeValidator,
+  FileTypeValidator,
+  Delete,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthenticationService } from './authentication-service.service.js';
@@ -28,7 +34,12 @@ import {
   Role,
   UsuarioResponse,
 } from '@app/contracts';
+import { FileInterceptor } from '@nestjs/platform-express';
 import type { AlterarSenhaDto, JwtPayload } from '@app/contracts';
+import {
+  DeleteAvatarResponse,
+  UploadAvatarResponse,
+} from '@app/contracts/auth/grpc/proto/auth.js';
 
 @Controller('auth')
 export class AuthenticationController {
@@ -90,6 +101,33 @@ export class AuthenticationController {
   @Get('me')
   async getUsuario(@CurrentUser() user: JwtPayload): Promise<UsuarioResponse> {
     return await this.authenticationService.getUsuario(user.sub);
+  }
+
+  @Post('me/avatar')
+  @UseInterceptors(
+    FileInterceptor('file', { limits: { fileSize: 2 * 1024 * 1024 } }),
+  )
+  async uploadAvatar(
+    @CurrentUser() user: JwtPayload,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 2 * 1024 * 1024 }),
+          new FileTypeValidator({ fileType: /^image\/(jpeg|png|webp)$/ }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+  ): Promise<UploadAvatarResponse> {
+    return this.authenticationService.uploadAvatar(user.sub, file);
+  }
+
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete('me/avatar')
+  async deleteAvatar(
+    @CurrentUser() user: JwtPayload,
+  ): Promise<DeleteAvatarResponse> {
+    return this.authenticationService.deleteAvatar(user.sub);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)

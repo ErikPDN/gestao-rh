@@ -9,6 +9,8 @@ service AuthService {
     rpc CriarUsuario (CriarUsuarioRequest) returns (UsuarioResponse);
     rpc GetUsuario (GetUsuarioRequest) returns (UsuarioResponse);
     rpc AlterarSenha (AlterarSenhaRequest) returns (AlterarSenhaResponse);
+    rpc UploadAvatar (UploadAvatarRequest) returns (UploadAvatarResponse);
+    rpc DeleteAvatar (DeleteAvatarRequest) returns (DeleteAvatarResponse);
 }
 
 message LoginRequest {
@@ -34,9 +36,23 @@ message AlterarSenhaRequest {
     string senhaNova = 3;
 }
 
-message AlterarSenhaResponse {
-    bool success = 1;
+message AlterarSenhaResponse {}
+
+message UploadAvatarRequest {
+    string usuarioId = 1;
+    bytes conteudo = 2;
+    string contentType = 3;
 }
+
+message UploadAvatarResponse {
+    string avatarUrl = 1;
+}
+
+message DeleteAvatarRequest {
+    string usuarioId = 1;
+}
+
+message DeleteAvatarResponse {}
 
 message AuthResponse {
     string accessToken = 1;

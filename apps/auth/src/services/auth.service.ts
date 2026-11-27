@@ -17,7 +17,8 @@ import { RpcException } from '@nestjs/microservices';
 import { status } from '@grpc/grpc-js';
 import { RefreshToken } from '../entities/refresh-token.entity.js';
 import { IsNull, Repository } from 'typeorm';
-import { AlterarSenhaResponse } from '@app/contracts/auth/grpc/proto/auth.js';
+import { UploadAvatarResponse } from '@app/contracts/auth/grpc/proto/auth.js';
+import { StorageService } from '../storage/storage.service.js';
 
 @Injectable()
 export class AuthService {
@@ -30,6 +31,7 @@ export class AuthService {
     private readonly refreshTokenRepository: Repository<RefreshToken>,
     private readonly tokenService: TokenService,
     private readonly funcionarioClient: FuncionarioClientService,
+    private readonly storageService: StorageService,
   ) {}
 
   async criarUsuario(dto: CreateUsuarioDto): Promise<UsuarioResponse> {
@@ -193,11 +195,7 @@ export class AuthService {
     return this.toUsuarioResponse(usuario, funcionario);
   }
 
-  async alterarSenha(
-    id: string,
-    senhaAtual: string,
-    senhaNova: string,
-  ): Promise<AlterarSenhaResponse> {
+  async alterarSenha(id: string, senhaAtual: string, senhaNova: string) {
     const usuario = await this.usuarioRepository.findOne({ where: { id } });
 
     if (!usuario || !usuario.ativo) {
@@ -222,8 +220,48 @@ export class AuthService {
       { usuarioId: usuario.id, revokedAt: IsNull() },
       { revokedAt: new Date() },
     );
+  }
 
-    return { success: true };
+  async updateAvatar(
+    usuarioId: string,
+    conteudo: Uint8Array,
+    contentType: string,
+  ): Promise<UploadAvatarResponse> {
+    const usuario = await this.usuarioRepository.findOne({
+      where: { id: usuarioId },
+    });
+
+    if (!usuario) {
+      throw this.error(status.NOT_FOUND, 'Usuário não encontrado.');
+    }
+
+    const ext = contentType.split('/')[1];
+    const avatarKey = `${usuarioId}/${randomUUID()}.${ext}`;
+
+    await this.storageService.upload(avatarKey, conteudo, contentType);
+
+    await this.usuarioRepository.update(usuarioId, { avatarKey });
+
+    if (usuario.avatarKey) {
+      await this.storageService.delete(usuario.avatarKey);
+    }
+
+    return { avatarUrl: await this.storageService.getUrl(avatarKey) };
+  }
+
+  async deleteAvatar(usuarioId: string): Promise<void> {
+    const usuario = await this.usuarioRepository.findOne({
+      where: { id: usuarioId },
+    });
+
+    if (!usuario) {
+      throw this.error(status.NOT_FOUND, 'Usuário não encontrado.');
+    }
+
+    if (!usuario.avatarKey) return;
+
+    await this.usuarioRepository.update(usuarioId, { avatarKey: null });
+    await this.storageService.delete(usuario.avatarKey);
   }
 
   private async revokeFamily(familyId: string) {
@@ -262,21 +300,23 @@ export class AuthService {
       accessToken: await this.tokenService.signAccessToken(usuario),
       refreshToken: token,
       expiresIn: this.tokenService.accessTtlSeconds,
-      usuario: this.toUsuarioResponse(usuario, funcionario),
+      usuario: await this.toUsuarioResponse(usuario, funcionario),
     };
   }
 
-  private toUsuarioResponse(
+  private async toUsuarioResponse(
     usuario: Usuario,
     funcionario?: FuncionarioResponse,
-  ): UsuarioResponse {
+  ): Promise<UsuarioResponse> {
     return {
       id: usuario.id,
       email: usuario.email,
       roles: usuario.roles,
       funcionarioId: usuario.funcionarioId ?? '',
       nome: funcionario?.nome,
-      avatarUrl: funcionario?.avatarUrl,
+      avatarUrl: usuario.avatarKey
+        ? await this.storageService.getUrl(usuario.avatarKey)
+        : undefined,
       cargo: funcionario?.cargo,
       departamento: funcionario?.departamento,
     };

@@ -44,4 +44,18 @@ export class AuthenticationService implements OnModuleInit {
   alterarSenha(id: string, dto: AlterarSenhaDto) {
     return firstValueFrom(this.authService.alterarSenha({ id, ...dto }));
   }
+
+  uploadAvatar(usuarioId: string, file: Express.Multer.File) {
+    return firstValueFrom(
+      this.authService.uploadAvatar({
+        usuarioId,
+        conteudo: file.buffer,
+        contentType: file.mimetype,
+      }),
+    );
+  }
+
+  deleteAvatar(usuarioId: string) {
+    return firstValueFrom(this.authService.deleteAvatar({ usuarioId }));
+  }
 }

@@ -43,6 +43,8 @@
     "seed:demo": "pnpm seed:departamentos && pnpm seed:funcionarios"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1178.0",
+    "@aws-sdk/s3-request-presigner": "^3.1178.0",
     "@grpc/grpc-js": "^1.14.4",
     "@grpc/proto-loader": "^0.8.1",
     "@nestjs/axios": "^12.0.1",
@@ -57,7 +59,7 @@
     "@nestjs/platform-express": "^12.0.1",
     "@nestjs/throttler": "^6.7.1",
     "@nestjs/typeorm": "^12.0.1",
-    "argon2": "^0.45.1",
+    "argon2": "^0.45.2",
     "axios": "^1.20.0",
     "class-transform": "^0.7.1",
     "class-transformer": "^0.5.1",
@@ -80,7 +82,8 @@
     "@rspack/core": "^2.2.4",
     "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.0",
-    "@types/node": "^24.0.0",
+    "@types/multer": "^2.3.0",
+    "@types/node": "^24.13.6",
     "@types/passport-jwt": "^4.0.1",
     "@types/pg": "^8.23.1",
     "@types/supertest": "^7.0.0",

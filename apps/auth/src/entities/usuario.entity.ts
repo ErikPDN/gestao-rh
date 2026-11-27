@@ -18,6 +18,9 @@ export class Usuario {
   @Column({ name: 'senha_hash', type: 'varchar', length: 255 })
   senhaHash!: string;
 
+  @Column({ name: 'avatar_key', type: 'varchar', length: 255, nullable: true })
+  avatarKey!: string | null;
+
   @Column({ name: 'roles', type: 'enum', enum: Role, array: true })
   roles!: Role[];
 
